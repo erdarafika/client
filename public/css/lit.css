@@ -180,3 +180,12 @@ th {
     
   }
   
+  .logo {
+    width: 70px;
+    height: 41px;
+    padding: 7px 8px 6px 10px;
+    margin-top: 7px;
+    fill: white;
+    border-radius: 3px;
+    background: #0a0a0a;
+}
