@@ -23,5 +23,5 @@ MIT
 Powered by
 ----
 
-![](https://gun.eco/images/gun_logo-01.svg "")
+![](https://camo.githubusercontent.com/36a3253e47dad84b51c325ef5c2b532916a016e1/68747470733a2f2f636c6475702e636f6d2f5445793979476834356c2e737667 "")
 
