@@ -142,7 +142,7 @@ const sig = function signed() {
             <textarea id="message" class="card w-100" placeholder="Write here"></textarea>
         </div>
         <div class="row">
-        <div class="2 col"><button type="submit" class="blue-button">Share</button></div>
+        <div class="2 col"><button type="submit" class="post-button">Share</button></div>
         <div class="10 col"><div class="red-button" id="signout">Sign Out</div></div>
         </div>
 

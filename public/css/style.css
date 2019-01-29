@@ -348,6 +348,24 @@ button, input[type=submit], .blue-button, .red-button, .green-button {
     text-transform: capitalize;
 }
 
+button, input[type=submit], .post-button {
+    border-radius: 4px;
+    font-weight: bold;
+    color: #0a0a0a;
+    margin-top: 7px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    height: 45px;
+    width: 120px;
+    border: 3px solid #272a34;
+    background: #737680;
+    line-height: 40px;
+    display: block;
+    transition: border .2s .2s, text-shadow .2s .2s, background .2s .2s, transform .2s, color .2s .2s, box-shadow .2s;
+    text-transform: capitalize;
+}
+
 .rounded-button {
     border: none;
     cursor: pointer;
@@ -368,12 +386,12 @@ button, input[type=submit], .blue-button, .red-button, .green-button {
 
 .rounded-button:hover { transform: scale(1.04); }
 
-button:hover, input[type=submit]:hover, .blue-button:hover, .red-button:hover {
+button:hover, input[type=submit]:hover, .blue-button:hover, .post-button:active, .red-button:hover {
     transform: scale(1.03);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
 }
 
-button:active, input[type=submit]:active, button.active, input[type=submit].active, .blue-button:active, .red-button:active, .green-button:active, .blue-button.active, .red-button.active, .green-button.active, .rounded-button:active, .rounded-button.active {
+button:active, input[type=submit]:active, button.active, input[type=submit].active, .blue-button:active, .post-button:active .red-button:active, .green-button:active, .blue-button.active, .red-button.active, .green-button.active, .rounded-button:active, .rounded-button.active {
     box-shadow: none;
     border-color: #000;
     color: #000;
@@ -387,6 +405,11 @@ button:active, input[type=submit]:active, button.active, input[type=submit].acti
 .blue-button {
     background: #367bf0;
     border-color: #2656a8;
+}
+
+.post-button {
+    background: #66e2d5;
+    border-color: #0a0a0a;
 }
 
 .red-button {
