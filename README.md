@@ -1,5 +1,5 @@
 # Client
-Client is decentralized microblogging powered by GunDB.
+Client is decentralized microblogging powered by [GunDB](https://gun.eco).
 
 ![](https://raw.githubusercontent.com/erdarafika/client/master/screencapture-localhost-9187-2019-01-29-22_55_57.png "")
 ![](https://raw.githubusercontent.com/erdarafika/client/master/screencapture-localhost-9187-2019-01-29-22_56_13.png "")
