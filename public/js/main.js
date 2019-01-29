@@ -1,6 +1,7 @@
-const gun = Gun(['http://localhost:3000/gun'])
-    // const gun = Gun(['http://178.128.101.229:8791/gun'])
+// const gun = Gun(['http://localhost:3000/gun'])
+const gun = Gun(['http://178.128.101.229:8791/gun'])
 const SEA = Gun.SEA
+const now = moment();
 const main = document.getElementById('main')
 
 const anonymous = async() => {
@@ -139,21 +140,13 @@ class App {
                                                     <div class="row">
                                                         <div class="tweetEntry-content">
 
-                                                            <a class="tweetEntry-account-group" href="[accountURL]">
-
                                                                 <img class="tweetEntry-avatar" src="http://placekitten.com/100/100">
-
-                                                                <strong class="tweetEntry-fullname">
-                                                            [fullname]
-                                                            </strong>
 
                                                                 <span class="tweetEntry-username">
                                                                 @<b>[username]</b>
                                                             </span>
 
-                                                                <span class="tweetEntry-timestamp">- [timestamp]</span>
-
-                                                            </a>
+                                                            <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m a')}</span>
 
                                                             <div class="tweetEntry-text-container">
                                                                 ${result.message}
@@ -186,7 +179,7 @@ class App {
                                                     }, key).then(res => {
                                                         const msg = JSON.parse(res)
                                                         verify_sig(msg.signed, key.pub).then(result => {
-                                                            
+
                                                         })
                                                     })
                                                 }
@@ -203,7 +196,7 @@ class App {
             }
         })
 
-        document.addEventListener('click', function (event) {
+        document.addEventListener('click', function(event) {
             if (!event.target.matches('#anon')) return;
             event.preventDefault();
             anonymous().then(x => {
@@ -242,21 +235,13 @@ class App {
                     <div class="row">
                         <div class="tweetEntry-content">
 
-                            <a class="tweetEntry-account-group" href="[accountURL]">
-
                                 <img class="tweetEntry-avatar" src="http://placekitten.com/100/100">
-
-                                <strong class="tweetEntry-fullname">
-                            [fullname]
-                            </strong>
 
                                 <span class="tweetEntry-username">
                                 @<b>[username]</b>
                             </span>
 
-                                <span class="tweetEntry-timestamp">- [timestamp]</span>
-
-                            </a>
+                                <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m a')}</span>
 
                             <div class="tweetEntry-text-container">
                                 ${result.message}
@@ -290,13 +275,13 @@ class App {
                 }, key).then(res => {
                     const msg = JSON.parse(res)
                     verify_sig(msg.signed, key.pub).then(result => {
-                        
+
                     })
                 })
             }
         })
 
-        document.addEventListener('click', function (event) {
+        document.addEventListener('click', function(event) {
             if (!event.target.matches('#signout')) return;
             event.preventDefault();
             localStorage.removeItem('pair')
