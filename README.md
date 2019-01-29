@@ -6,7 +6,8 @@ Client is decentralized microblogging powered by GunDB.
 Install the dependencies and devDependencies and start the server.
 
 ```sh
-$ git clone 
+$ git clone https://github.com/erdarafika/client.git
+$ cd client
 $ npm install 
 $ node server.js
 ```
