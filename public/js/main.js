@@ -1,5 +1,5 @@
-// const gun = Gun(['http://localhost:3000/gun'])
-const gun = Gun(['http://178.128.101.229:8791/gun'])
+const gun = Gun(['http://localhost:3000/gun'])
+// const gun = Gun(['http://178.128.101.229:8791/gun'])
 const SEA = Gun.SEA
 const now = moment();
 const main = document.getElementById('main')
@@ -37,17 +37,73 @@ const smartTruncate = function smartTruncate(string, length) {
     return '' + start + mark + end;
 }
 
+const comment = function comment(id){
+    const msg = document.getElementById('msg.'+id).value
+    if (msg && msg.length <= 160) {
+        document.getElementById('msg.'+id).value = ""
+        const pair = localStorage.getItem('pair')
+        const key = JSON.parse(pair)
+        if (message) {
+            post(id, 'replies', {
+                message: msg
+            }, key).then(res => {
+                const msg = JSON.parse(res)
+                verify(msg.signed, key.pub).then(result => {
+
+                })
+            })
+        }
+    } else {
+        
+    }
+}
+
 const showreply = function showreply(id) {
-    let target = document.getElementById('r.'+id)
+    let target = document.getElementById(id)
     let div = document.createElement('div')
     div.id = "c."+id
     div.innerHTML = `
         <div>
-            <textarea id="messageid" class="card w-100" style="height:100px;" placeholder="Write your comment..."></textarea>
+            <textarea id="msg.${id}" class="card w-100" style="height:100px;" placeholder="Write your comment..."></textarea>
         </div>
-        <div><button type="submit" class="post-button">Reply</button></div>
+        <div><button onclick="comment('${id}')" class="post-button">Reply</button></div>
     `    
     target.parentNode.insertBefore(div, target.nextSibling);   
+
+    gun.get(id).map().on(function(data) {
+        console.log(data)
+        let target = document.getElementById("c."+id)
+        let div = document.createElement('div')
+        div.className = 'tweetEntry'
+        const msg = JSON.parse(data)
+        verify(msg.signed, msg.pubkey).then(result => {
+            div.innerHTML = `
+                <div class="row">
+                    <div id="d-public.${msg.timestamp}~${msg.pubkey}" class="tweetEntry-content">
+                        <img class="tweetEntry-avatar" src="http://placekitten.com/100/100">
+                        <span class="tweetEntry-username">
+                            <b>${smartTruncate(msg.pubkey, 20)}</b>
+                        </span>
+                        <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m a')}</span>
+                        <div class="tweetEntry-text-container">
+                            ${result.message}
+                        </div>
+                    </div>
+                    <form id="f.public.${msg.timestamp}~${msg.pubkey}">
+                        <div class="optionalMedia" style="display:none;">
+                            <input id="public.${msg.timestamp}~${msg.pubkey}" type="text" value="superman">
+                            <img class="optionalMedia-img" src="https://i.imgur.com/kOhhPAk.jpg">
+                        </div>
+                        <div class="tweetEntry-action-list" style="line-height:32px;color: #b1bbc3;">
+                            <i id="r.public.${msg.timestamp}~${msg.pubkey}" onclick="showreply('public.${msg.timestamp}~${msg.pubkey}')" class="fa fa-reply" style="width: 80px; cursor: pointer;"></i>
+                            
+                        </div>
+                    </form>
+                </div>
+                `
+        })
+        target.parentNode.insertBefore(div, target.nextSibling);
+    });
 }
 
 const notsigned = function notsigned() {
@@ -190,8 +246,7 @@ const sig = function signed() {
                             <img class="optionalMedia-img" src="https://i.imgur.com/kOhhPAk.jpg">
                         </div>
                         <div class="tweetEntry-action-list" style="line-height:32px;color: #b1bbc3;">
-                            <i id="r.public.${msg.timestamp}~${msg.pubkey}" onclick="showreply('public.${msg.timestamp}~${msg.pubkey}')" class="fa fa-reply" style="width: 80px; cursor: pointer;"></i>
-                            
+                            <i id="${msg.hash}" onclick="showreply('${msg.hash}')" class="fa fa-reply" style="width: 80px; cursor: pointer;"></i>
                         </div>
                     </form>
                 </div>
@@ -210,7 +265,7 @@ const sig = function signed() {
                 message: message
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                verify_sig(msg.signed, key.pub).then(result => {
+                verify(msg.signed, key.pub).then(result => {
 
                 })
             })
@@ -283,6 +338,7 @@ const post = async(node, path, data, pair) => {
     try {
         const signed = await SEA.sign(data, pair)
         const obj = {
+            hash: sha256(path + '.' + new Date().getTime() + '~' + pair.pub),
             pubkey: pair.pub,
             signed: signed,
             timestamp: new Date().getTime()
