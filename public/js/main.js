@@ -37,6 +37,19 @@ const smartTruncate = function smartTruncate(string, length) {
     return '' + start + mark + end;
 }
 
+const showreply = function showreply(id) {
+    let target = document.getElementById('r.'+id)
+    let div = document.createElement('div')
+    div.id = "c."+id
+    div.innerHTML = `
+        <div>
+            <textarea id="messageid" class="card w-100" style="height:100px;" placeholder="Write your comment..."></textarea>
+        </div>
+        <div><button type="submit" class="post-button">Reply</button></div>
+    `    
+    target.parentNode.insertBefore(div, target.nextSibling);   
+}
+
 const notsigned = function notsigned() {
     let p = document.createElement('form')
     p.className = 'mb-0'
@@ -145,7 +158,6 @@ const sig = function signed() {
         <div class="2 col"><button type="submit" class="post-button">Share</button></div>
         <div class="10 col"><div class="red-button" id="signout">Sign Out</div></div>
         </div>
-
         <div class="row">
             <div class="tweetEntry-tweetHolder">
                 <h1 id="tweet" class="tweetEntry" style="margin-bottom:0px;"></h1>
@@ -162,31 +174,26 @@ const sig = function signed() {
         verify(msg.signed, msg.pubkey).then(result => {
             div.innerHTML = `
                 <div class="row">
-                    <div class="tweetEntry-content">
-
-                            <img class="tweetEntry-avatar" src="http://placekitten.com/100/100">
-
-                            <span class="tweetEntry-username">
+                    <div id="d-public.${msg.timestamp}~${msg.pubkey}" class="tweetEntry-content">
+                        <img class="tweetEntry-avatar" src="http://placekitten.com/100/100">
+                        <span class="tweetEntry-username">
                             <b>${smartTruncate(msg.pubkey, 20)}</b>
                         </span>
-
-                            <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m a')}</span>
-
+                        <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m a')}</span>
                         <div class="tweetEntry-text-container">
                             ${result.message}
                         </div>
-
                     </div>
-
-                    <div class="optionalMedia" style="display:none;">
-                        <img class="optionalMedia-img" src="https://i.imgur.com/kOhhPAk.jpg">
-                    </div>
-
-                    <div class="tweetEntry-action-list" style="line-height:24px;color: #b1bbc3;">
-                        <i class="fa fa-reply" style="width: 80px;"></i>
-                        <i class="fa fa-retweet" style="width: 80px"></i>
-                        <i class="fa fa-heart" style="width: 80px"></i>
-                    </div>
+                    <form id="f.public.${msg.timestamp}~${msg.pubkey}">
+                        <div class="optionalMedia" style="display:none;">
+                            <input id="public.${msg.timestamp}~${msg.pubkey}" type="text" value="superman">
+                            <img class="optionalMedia-img" src="https://i.imgur.com/kOhhPAk.jpg">
+                        </div>
+                        <div class="tweetEntry-action-list" style="line-height:32px;color: #b1bbc3;">
+                            <i id="r.public.${msg.timestamp}~${msg.pubkey}" onclick="showreply('public.${msg.timestamp}~${msg.pubkey}')" class="fa fa-reply" style="width: 80px; cursor: pointer;"></i>
+                            
+                        </div>
+                    </form>
                 </div>
                 `
         })
