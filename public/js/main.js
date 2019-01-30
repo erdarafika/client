@@ -266,7 +266,7 @@ const sig = function signed() {
             }, key).then(res => {
                 const msg = JSON.parse(res)
                 verify(msg.signed, key.pub).then(result => {
-
+                    document.getElementById('message').value = ""
                 })
             })
         }
