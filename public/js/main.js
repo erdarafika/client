@@ -67,7 +67,10 @@ const showreply = function showreply(id) {
             <div>
                 <textarea id="msg.${id}" class="card w-100" style="height:100px;" placeholder="Write your comment..."></textarea>
             </div>
-            <div><button onclick="comment('${id}')" class="post-button">Reply</button></div>
+            <div>
+                <button onclick="comment('${id}')" class="post-button">Reply</button></div>
+                <!-- <button onclick="document.getElementById('c.${id}').remove()" class="red-button">Close</button> -->
+            </div>
         `    
         target.parentNode.insertBefore(div, target.nextSibling);   
 
@@ -102,7 +105,8 @@ const showreply = function showreply(id) {
                     </div>
                     `
             })
-            target.parentNode.insertBefore(div, target.nextSibling);
+            // target.parentNode.insertBefore(div, target.nextSibling);
+            target.appendChild(div)
         });
     }
 }
