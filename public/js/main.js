@@ -96,7 +96,6 @@ const showreply = function showreply(id) {
                                 <img class="optionalMedia-img" src="https://i.imgur.com/kOhhPAk.jpg">
                             </div>
                             <div class="tweetEntry-action-list" style="line-height:32px;color: #b1bbc3;">
-                                <i id="r.public.${msg.timestamp}~${msg.pubkey}" onclick="showreply('public.${msg.timestamp}~${msg.pubkey}')" class="fa fa-reply" style="width: 80px; cursor: pointer;"></i>
                                 
                             </div>
                         </form>
