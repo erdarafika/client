@@ -2,6 +2,7 @@
 Client is decentralized microblogging powered by [GunDB](https://gun.eco). This project is still lack of features, but it works :)
 
 ![](https://raw.githubusercontent.com/erdarafika/client/master/screencapture-localhost-9187-2019-01-29-22_55_57.png "")
+![](https://raw.githubusercontent.com/erdarafika/client/master/screencapture-localhost-9187-2019-01-30-17_13_47.png "")
 ![](https://raw.githubusercontent.com/erdarafika/client/master/screencapture-localhost-9187-2019-01-29-22_56_13.png "")
 
 ### Installation
