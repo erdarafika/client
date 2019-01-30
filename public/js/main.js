@@ -85,7 +85,7 @@ const showreply = function showreply(id) {
                             <span class="tweetEntry-username">
                                 <b>${smartTruncate(msg.pubkey, 20)}</b>
                             </span>
-                            <span class="tweetEntry-timestamp"> - ${moment(msg.timestamp).format('L h:m a')}</span>
+                            <span class="tweetEntry-timestamp"> - ${moment(msg.timestamp).format('L h:m:s a')}</span>
                             <div class="tweetEntry-text-container">
                                 ${result.message}
                             </div>
@@ -237,7 +237,7 @@ const sig = function signed() {
                         <span class="tweetEntry-username">
                             <b>${smartTruncate(msg.pubkey, 20)}</b>
                         </span>
-                        <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m a')}</span>
+                        <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m:s a')}</span>
                         <div class="tweetEntry-text-container">
                             ${result.message}
                         </div>
