@@ -1,5 +1,5 @@
-const gun = Gun(['http://localhost:3000/gun'])
-// const gun = Gun(['http://178.128.101.229:8791/gun'])
+// const gun = Gun(['http://localhost:3000/gun'])
+const gun = Gun(['http://178.128.101.229:8791/gun'])
 const SEA = Gun.SEA
 const now = moment();
 const main = document.getElementById('main')
@@ -84,7 +84,7 @@ const showreply = function showreply(id) {
                         <span class="tweetEntry-username">
                             <b>${smartTruncate(msg.pubkey, 20)}</b>
                         </span>
-                        <span class="tweetEntry-timestamp">- ${moment(msg.timestamp).format('L h:m a')}</span>
+                        <span class="tweetEntry-timestamp"> - ${moment(msg.timestamp).format('L h:m a')}</span>
                         <div class="tweetEntry-text-container">
                             ${result.message}
                         </div>
