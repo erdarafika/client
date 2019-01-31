@@ -104,7 +104,7 @@ const showreply = function showreply(id) {
                                     <i id="${msg.hash}" onclick="showreply('${msg.hash}')" class="fa fa-reply" style="width: 80px; cursor: pointer;"></i>
                                 </div>
                             </form>
-                        </div>d
+                        </div>
                         `
                     }
                 })
