@@ -76,7 +76,6 @@ const showreply = function showreply(id) {
         target.parentNode.insertBefore(div, target.nextSibling);   
 
         gun.get(id).map().on(function(data) {
-            console.log(data)
             let target = document.getElementById("c."+id)
             let div = document.createElement('div')
             div.className = 'tweetEntry'
@@ -349,19 +348,21 @@ const verify = async(data, pub) => {
 }
 
 const post = async(node, path, data, pair) => {
-    try {
-        const signed = await SEA.sign(data, pair)
-        const obj = {
-            hash: sha256(path + '.' + new Date().getTime() + '~' + pair.pub),
-            pubkey: pair.pub,
-            signed: signed,
-            timestamp: new Date().getTime()
+    if (pair) {
+        try {
+            const signed = await SEA.sign(data, pair)
+            const obj = {
+                hash: sha256(path + '.' + new Date().getTime() + '~' + pair.pub),
+                pubkey: pair.pub,
+                signed: signed,
+                timestamp: new Date().getTime()
+            }
+            const jstring = JSON.stringify(obj)
+            const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
+            return result
+        } catch (error) {
+    
         }
-        const jstring = JSON.stringify(obj)
-        const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
-        return result
-    } catch (error) {
-
     }
 }
 
