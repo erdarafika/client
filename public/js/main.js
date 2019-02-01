@@ -120,7 +120,7 @@ const showreplyanon = function showreplyanon(id) {
                         ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a onclick="showreply('${msg.hash}')">[+]</a></span>
+                            <span class="toggle"><a onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                         </div>
                         `
                     }
