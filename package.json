@@ -12,6 +12,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "gun": "^0.9.9999991",
     "moment": "^2.24.0",
     "smart-truncate": "^1.0.1"
   }
