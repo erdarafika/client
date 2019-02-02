@@ -105,9 +105,12 @@ const showreply = function showreply(id) {
                 verify(msg.signed, msg.pubkey).then(result => {
                     if (result.message) {
                         div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
                         <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
+                        ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a onclick="showreply('${msg.hash}')">[+]</a></span>
@@ -137,9 +140,12 @@ const showreplyanon = function showreplyanon(id) {
                 verify(msg.signed, msg.pubkey).then(result => {
                     if (result.message) {
                         div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
                         <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
+                        ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a onclick="showreplyanon('${msg.hash}')">[+]</a></span>
@@ -181,9 +187,12 @@ const notsigned = function notsigned() {
             verify(msg.signed, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
                         <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
+                        ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
@@ -287,9 +296,12 @@ const sig = function signed() {
             verify(msg.signed, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
                         <div style="line-height: 1.42857143em">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
+                        ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
@@ -387,16 +399,20 @@ const verify = async(data, pub) => {
 const post = async(node, path, data, pair) => {
     if (pair) {
         try {
-            const signed = await SEA.sign(data, pair)
-            const obj = {
-                hash: sha256(path + '.' + new Date().getTime() + '~' + pair.pub),
-                pubkey: pair.pub,
-                signed: signed,
-                timestamp: new Date().getTime()
+            if (pair.pub == undefined || pair.pub == "") {
+                
+            } else {
+                const signed = await SEA.sign(data, pair)
+                const obj = {
+                    hash: sha256(path + '.' + new Date().getTime() + '~' + pair.pub),
+                    pubkey: pair.pub,
+                    signed: signed,
+                    timestamp: new Date().getTime()
+                }
+                const jstring = JSON.stringify(obj)
+                const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
+                return result
             }
-            const jstring = JSON.stringify(obj)
-            const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
-            return result
         } catch (error) {
 
         }
