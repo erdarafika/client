@@ -273,13 +273,14 @@ const notsigned = function notsigned() {
 
 const sig = function signed() {
     let user = localStorage.getItem('pair')
+    let pubkey = JSON.parse(user)
     let main = document.getElementById('main')
     let p = document.createElement('form')
     p.className = 'mb-1'
     p.id = 'post'
     p.innerHTML = `
         <div class="item-view-header">
-            ${smartTruncate(user.pub, 25)}
+            ${smartTruncate(pubkey.pub, 25)}
             <textarea id="message" class="msg" placeholder="Write something ..." onclick="count()"></textarea>
             <div class="comment">
                 <span class="toggle"><a id="share">[ Post ]</a></span> <span class="toggle"><a id="signout">[ Sign Out ]</a></span> <span class="char-left"></span>
