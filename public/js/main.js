@@ -272,13 +272,14 @@ const notsigned = function notsigned() {
 }
 
 const sig = function signed() {
+    let user = localStorage.getItem('pair')
     let main = document.getElementById('main')
     let p = document.createElement('form')
     p.className = 'mb-1'
     p.id = 'post'
     p.innerHTML = `
         <div class="item-view-header">
-            "I cannot teach anybody anything. I can only make them think." - Socrates
+            ${smartTruncate(user.pub, 25)}
             <textarea id="message" class="msg" placeholder="Write something ..." onclick="count()"></textarea>
             <div class="comment">
                 <span class="toggle"><a id="share">[ Post ]</a></span> <span class="toggle"><a id="signout">[ Sign Out ]</a></span> <span class="char-left"></span>
