@@ -85,7 +85,7 @@ const showreply = function showreply(id) {
                         div.innerHTML = `
                         ${result.message}
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
+                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a onclick="showreply('${msg.hash}')">[+]</a></span>
@@ -117,7 +117,7 @@ const showreplyanon = function showreplyanon(id) {
                         div.innerHTML = `
                         ${result.message}
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
+                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a onclick="showreplyanon('${msg.hash}')">[+]</a></span>
@@ -159,9 +159,9 @@ const notsigned = function notsigned() {
             verify(msg.signed, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
-                        ${result.message}
+                        <div style="line-height: 1.42857143em;">${result.message}</div>
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
+                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
@@ -265,9 +265,9 @@ const sig = function signed() {
             verify(msg.signed, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
-                        ${result.message}
+                        <div style="line-height: 1.42857143em">${result.message}</div>
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
+                        ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div class="comment" id="${msg.hash}">
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
