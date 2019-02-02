@@ -113,15 +113,29 @@ const showreply = function showreply(id) {
                         ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a onclick="showreply('${msg.hash}')">[+]</a></span>
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
                         </div>
                         `
                     }
                 })
             }
             target.appendChild(div)
+            document.getElementById('show.'+id).setAttribute('onclick', "hide('"+id+"')")
+            document.getElementById('show.'+id).innerHTML="[-]"
         });
     }
+}
+
+const hide = function hide(id){
+    document.getElementById("c."+id).remove()
+    document.getElementById('show.'+id).setAttribute('onclick', "showreply('"+id+"')")
+    document.getElementById('show.'+id).innerHTML="[+]"
+}
+
+const hideanon = function hideanon(id){
+    document.getElementById("c."+id).remove()
+    document.getElementById('show.'+id).setAttribute('onclick', "showreplyanon('"+id+"')")
+    document.getElementById('show.'+id).innerHTML="[+]"
 }
 
 const showreplyanon = function showreplyanon(id) {
@@ -148,13 +162,15 @@ const showreplyanon = function showreplyanon(id) {
                         ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a onclick="showreplyanon('${msg.hash}')">[+]</a></span>
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                         </div>
                         `
                     }
                 })
             }
             target.appendChild(div)
+            document.getElementById('show.'+id).setAttribute('onclick', "hideanon('"+id+"')")
+            document.getElementById('show.'+id).innerHTML="[-]"
         });
     }
 }
