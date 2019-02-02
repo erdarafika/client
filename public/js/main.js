@@ -83,7 +83,7 @@ const showreply = function showreply(id) {
                 verify(msg.signed, msg.pubkey).then(result => {
                     if (result.message) {
                         div.innerHTML = `
-                        ${result.message}
+                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
@@ -115,7 +115,7 @@ const showreplyanon = function showreplyanon(id) {
                 verify(msg.signed, msg.pubkey).then(result => {
                     if (result.message) {
                         div.innerHTML = `
-                        ${result.message}
+                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
@@ -159,7 +159,7 @@ const notsigned = function notsigned() {
             verify(msg.signed, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
-                        <div style="line-height: 1.42857143em;">${result.message}</div>
+                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
@@ -265,7 +265,7 @@ const sig = function signed() {
             verify(msg.signed, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
-                        <div style="line-height: 1.42857143em">${result.message}</div>
+                        <div style="line-height: 1.42857143em">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()} · ${smartTruncate(msg.pubkey, 25)}
                         </p>
