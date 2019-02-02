@@ -181,6 +181,9 @@ const notsigned = function notsigned() {
     p.id = 'form-signin'
     p.innerHTML = `
     <div class="item-view-header">
+        <div style="margin-bottom: 20px;">
+            Your identity is created here, by you. Not on a server. Your identity on this site is cryptographic keys owned by you. Only you have access to it, meaning even we cannot reset your password!. They enable additional features, but you can participate using anonymous keys.
+        </div>
         <input id="alias" class="question" type="text" placeholder="alias">
 
         <input id="password" class="question" type="password" autocomplete="password" placeholder="password">
