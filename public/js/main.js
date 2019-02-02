@@ -38,10 +38,32 @@ const smartTruncate = function smartTruncate(string, length) {
     return '' + start + mark + end;
 }
 
-const comment = function comment(id){
-    const msg = document.getElementById('msg.'+id).value
+const count = function count() {
+    var msg = document.getElementsByClassName("msg")[0],
+        charLeftLabel = "char-left",
+        charLeft = document.getElementsByClassName(charLeftLabel)[0],
+        maxChar = 160,
+        maxCharWarn = 20;
+
+    // show characters left at start
+    charLeft.innerHTML = maxChar;
+
+    // update while typing
+    msg.onkeydown = function() {
+        setTimeout(function() {
+            charLeft.innerHTML = maxChar - msg.value.length;
+
+            // whether or not to display warning class based on characters left
+            var warnLabel = msg.value.length >= maxChar - maxCharWarn ? " warning" : "";
+            charLeft.className = charLeftLabel + warnLabel;
+        }, 1);
+    };
+}
+
+const comment = function comment(id) {
+    const msg = document.getElementById('msg.' + id).value
     if (msg && msg.length <= 160) {
-        document.getElementById('msg.'+id).value = ""
+        document.getElementById('msg.' + id).value = ""
         const pair = localStorage.getItem('pair')
         const key = JSON.parse(pair)
         if (message) {
@@ -55,15 +77,15 @@ const comment = function comment(id){
             })
         }
     } else {
-        
+
     }
 }
 
 const showreply = function showreply(id) {
-    if (!document.getElementById("c."+id)) {
+    if (!document.getElementById("c." + id)) {
         let target = document.getElementById(id)
         let div = document.createElement('div')
-        div.id = "c."+id
+        div.id = "c." + id
         div.innerHTML = `
             <div>
                 <textarea id="msg.${id}" class="card w-100" style="height:100px;" placeholder="give your thoughts ..."></textarea>
@@ -71,11 +93,11 @@ const showreply = function showreply(id) {
                     <span class="toggle"><a onclick="comment('${id}')">[ Reply ]</a></span>
                 </div>
             </div>
-        `    
-        target.parentNode.insertBefore(div, target.nextSibling);   
+        `
+        target.parentNode.insertBefore(div, target.nextSibling);
 
         gun.get(id).map().on(function(data) {
-            let target = document.getElementById("c."+id)
+            let target = document.getElementById("c." + id)
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
@@ -100,14 +122,14 @@ const showreply = function showreply(id) {
 }
 
 const showreplyanon = function showreplyanon(id) {
-    if (!document.getElementById("c."+id)) {
+    if (!document.getElementById("c." + id)) {
         let target = document.getElementById(id)
         let div = document.createElement('div')
-        div.id = "c."+id    
-        target.parentNode.insertBefore(div, target.nextSibling);   
+        div.id = "c." + id
+        target.parentNode.insertBefore(div, target.nextSibling);
 
         gun.get(id).map().on(function(data) {
-            let target = document.getElementById("c."+id)
+            let target = document.getElementById("c." + id)
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
@@ -138,11 +160,11 @@ const notsigned = function notsigned() {
     p.innerHTML = `
     <div class="item-view-header">
         <input id="alias" class="question" type="text" placeholder="alias">
-        
+
         <input id="password" class="question" type="password" autocomplete="password" placeholder="password">
-       
+
         <input id="pin" class="question" type="password" autocomplete="password" placeholder="pin">
-        
+
         <div class="comment" style="margin-top: 15px">
             <span class="toggle"><a id="signin">[ SIgn IN ]</a></span> <span class="toggle"><a id="signup">[ Sign Up ]</a></span> <span class="toggle"><a id="anonymous">[ Anonymous ]</a></span>
         </div>
@@ -248,13 +270,13 @@ const sig = function signed() {
     p.innerHTML = `
         <div class="item-view-header">
             "I cannot teach anybody anything. I can only make them think." - Socrates
-            <textarea id="message" class="card w-100" placeholder="Write something ..."></textarea>
+            <textarea id="message" class="msg" placeholder="Write something ..." onclick="count()"></textarea>
             <div class="comment">
-                <span class="toggle"><a id="share">[ Post ]</a></span> <span class="toggle"><a id="signout">[ Sign Out ]</a></span>
+                <span class="toggle"><a id="share">[ Post ]</a></span> <span class="toggle"><a id="signout">[ Sign Out ]</a></span> <span class="char-left"></span>
             </div>
         </div>
         `
-        main.appendChild(p)
+    main.appendChild(p)
 
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
@@ -315,18 +337,22 @@ const anonymous = async() => {
     }
 }
 
-const register = async (username, password, salt) => {
+const register = async(username, password, salt) => {
     try {
         const pair = await SEA.pair()
         const proof = await SEA.work(password, salt)
         const auth = await SEA.encrypt(pair, proof)
         const signed = await SEA.sign(auth, pair)
-        const obj = {pub: pair.pub, epub: pair.epub, auth: signed}
+        const obj = {
+            pub: pair.pub,
+            epub: pair.epub,
+            auth: signed
+        }
         const jstring = JSON.stringify(obj)
         const user = await gun.get(username).get('sea').put(jstring)
         return user
     } catch (error) {
-        
+
     }
 }
 
@@ -372,7 +398,7 @@ const post = async(node, path, data, pair) => {
             const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
             return result
         } catch (error) {
-    
+
         }
     }
 }
