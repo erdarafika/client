@@ -166,7 +166,7 @@ const notsigned = function notsigned() {
         <input id="pin" class="question" type="password" autocomplete="password" placeholder="pin">
 
         <div class="comment" style="margin-top: 15px">
-            <span class="toggle"><a id="signin">[ SIgn IN ]</a></span> <span class="toggle"><a id="signup">[ Sign Up ]</a></span> <span class="toggle"><a id="anonymous">[ Anonymous ]</a></span>
+            <span class="toggle"><a id="signin">[ SIgn In ]</a></span> <span class="toggle"><a id="signup">[ Sign Up ]</a></span> <span class="toggle"><a id="anonymous">[ Anonymous ]</a></span>
         </div>
     </div>
         `
