@@ -1,5 +1,20 @@
 // const gun = Gun(['http://localhost:3000/gun'])
-// const gun = Gun(['http://178.128.101.229:8791/gun'])
+// const gun = Gun(['http://178.128.101.229:8791/gun']) 
+
+Gun.on('opt', function (ctx) {
+  if (ctx.once) {
+    return
+  }
+  ctx.on('in', function (msg) {
+    var to = this.to
+    to.next(msg)
+  })
+  ctx.on('out', function (msg) {
+    var to = this.to
+    to.next(msg)
+  })
+})
+
 const gun = Gun(['https://peer.nevalab.space/gun'])
 const SEA = Gun.SEA
 const now = moment();
@@ -42,7 +57,7 @@ const count = function count() {
     var msg = document.getElementsByClassName("msg")[0],
         charLeftLabel = "char-left",
         charLeft = document.getElementsByClassName(charLeftLabel)[0],
-        maxChar = 160,
+        maxChar = 10000,
         maxCharWarn = 20;
 
     // show characters left at start
@@ -62,7 +77,7 @@ const count = function count() {
 
 const comment = function comment(id) {
     const msg = document.getElementById('msg.' + id).value
-    if (msg && msg.length <= 160) {
+    if (msg && msg.length <= 1000) {
         document.getElementById('msg.' + id).value = ""
         const pair = localStorage.getItem('pair')
         const key = JSON.parse(pair)
@@ -235,7 +250,9 @@ const notsigned = function notsigned() {
                 } else {
                     try {
                         const sea = JSON.parse(res)
-                        verify(sea.auth, sea.pub).then(res_sig => {
+                        const struct = {ct: sea.ct, iv: sea.iv, s: sea.s}
+                        const auth = 'SEA{"m":{"ct":"'+sea.ct+'","iv":"'+sea.iv+'","s":"'+sea.s+'"},"s":"'+sea.sig+'"}'
+                        verify(auth, sea.pub).then(res_sig => {
                             signin(password, pin, res_sig).then(res => {
                                 if (res == undefined) {
 
@@ -281,9 +298,11 @@ const notsigned = function notsigned() {
                 } else {
                     let pair = JSON.stringify(res)
                     localStorage.setItem('pair', pair)
-                    let el_signin = document.getElementById('form-signin')
-                    el_signin.remove()
-                    sig()
+                    document.getElementById('password').value = ""
+                    document.getElementById('pin').value = ""
+                    // let el_signin = document.getElementById('form-signin')
+                    // el_signin.remove()
+                    // sig()
                 }
             })
         }
@@ -376,11 +395,18 @@ const register = async(username, password, salt) => {
         const proof = await SEA.work(password, salt)
         const auth = await SEA.encrypt(pair, proof)
         const signed = await SEA.sign(auth, pair)
+        const enc = JSON.parse(auth.substr(3)) 
+        const sigm = JSON.parse(signed.substr(3))
         const obj = {
             pub: pair.pub,
             epub: pair.epub,
-            auth: signed
+            ct: enc.ct,
+            iv: enc.iv,
+            s: enc.s, 
+            sig: sigm.s
         }
+        console.log(obj) 
+        console.log(signed)
         const jstring = JSON.stringify(obj)
         const user = await gun.get(username).get('sea').put(jstring)
         return user
@@ -424,6 +450,7 @@ const post = async(node, path, data, pair) => {
                 
             } else {
                 const signed = await SEA.sign(data, pair)
+                const seasig = JSON.parse(signed.substr(3))
                 const obj = {
                     hash: sha256(path + '.' + new Date().getTime() + '~' + pair.pub),
                     pubkey: pair.pub,
