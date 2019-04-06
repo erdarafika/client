@@ -217,6 +217,7 @@ const notsigned = function notsigned() {
         let div = document.createElement('div')
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
+        console.log(msg)
         if (msg.signed !== undefined && msg.pubkey !== undefined) {
             verify(msg.signed, msg.pubkey).then(result => {
                 if (result.message) {
