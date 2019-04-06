@@ -363,7 +363,9 @@ const sig = function signed() {
                 message: message
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                verify(msg.signed, key.pub).then(result => {
+                const sig = 'SEA{"m":{"message":"'+msg.message+'"},"s":"'+msg.sig+'"}'
+                console.log(sig)
+                verify(sig, key.pub).then(result => {
                     document.getElementById('message').value = ""
                 })
             })
@@ -454,11 +456,10 @@ const post = async(node, path, data, pair) => {
                     hash: hash,
                     type: "post",
                     pubkey: pair.pub,
-                    message: signed.m.message,
-                    sig: signed.m.s,
+                    message: seasig.m.message,
+                    sig: seasig.s,
                     timestamp: new Date().getTime()
                 }
-                console.log(obj)
                 const jstring = JSON.stringify(obj)
                 const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
                 return result
