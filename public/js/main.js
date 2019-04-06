@@ -1,6 +1,3 @@
-// const gun = Gun(['http://localhost:3000/gun'])
-// const gun = Gun(['http://178.128.101.229:8791/gun']) 
-
 Gun.on('opt', function (ctx) {
   if (ctx.once) {
     return
