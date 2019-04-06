@@ -1,18 +1,97 @@
 // const gun = Gun(['http://localhost:3000/gun'])
 // const gun = Gun(['http://178.128.101.229:8791/gun']) 
 
-Gun.on('opt', function (ctx) {
-  if (ctx.once) {
-    return
-  }
-  ctx.on('in', function (msg) {
-    var to = this.to
-    to.next(msg)
-  })
-  ctx.on('out', function (msg) {
-    var to = this.to
-    to.next(msg)
-  })
+Gun.on('opt', function(ctx){
+    if(ctx.once){ return }
+    ctx.on('in', function(data){
+        const to = this.to
+        const put = data.put
+        const get = data.get
+        if (put) {
+            const pub = Object.keys(put[Object.keys(put)[0]])[1]
+            const pub_val = put[Object.keys(put)[0]][pub]
+            const exSoul = pub.split('~')
+            const path = exSoul[0]
+            const pubkey = exSoul[1]
+            const spath = path.split('.')
+            const topic = spath[0]
+            const topics = ["sea", "public", "posts", "replies", "to"]
+            const filter = topics.includes(topic)
+            // const id = Object.keys(put)
+            // put[id[0]]['_']['>']['id'] = put[id[0]]['_']['>'][pub]
+            // put[id[0]]['id'] = 'id_'+new Date().getTime()
+            // console.log(pub)
+            if (pubkey && typeof(pub_val) == 'string' && filter == true) {
+                try {
+                    const obj = JSON.parse(pub_val)
+                    if (obj) {
+                        if (pubkey == 'undefined' || pubkey.length < 87) {
+                            
+                        } else {
+                            const sig = 'SEA{"m":{"message":"'+ obj.message +'"},"s":"'+ obj.sig +'"}'
+                            verify_sig(sig, pubkey).then( res => {
+                                const post = res.message
+                                try {
+                                    const id = JSON.parse(pub_val)
+                                    if (res !== undefined && post.length <= 1000 && id.hash) {
+                                        to.next(data)
+                                    }
+                                } catch (error) {
+                                    
+                                }
+                            })
+                        }
+                    }
+                } catch (error) {
+                    
+                }
+            }
+            if (!pubkey && typeof(pub_val) == 'string' && filter == true) {
+                try {
+                    const obj = JSON.parse(pub_val)    
+                    sea(Object.keys(put)[0]).then(res => {
+                        if (res === undefined) {
+                            if (pub == 'sea') {
+                                if (obj.epub && obj.pub && obj.ct && obj.iv && obj.s) {
+                                    const struct = {ct: obj.ct, iv: obj.iv, s: obj.s}
+                                    const auth = 'SEA{"m":{"ct":"'+obj.ct+'","iv":"'+obj.iv+'","s":"'+obj.s+'"},"s":"'+obj.sig+'"}'
+                                    verify_sig(auth, obj.pub).then( res_sig => { 
+                                        if (res_sig) {
+                                            to.next(data)
+                                        }
+                                    })
+                                }
+                            }
+                        } else {
+                            try {
+                                const exist_obj = JSON.parse(res)
+                                if (pub == 'sea') {
+                                    if (obj.pub == exist_obj.pub) {
+                                        if (obj.epub && obj.pub && obj.ct && obj.iv && obj.s && exist_obj.pub) {
+                                            const struct = {ct: exist_obj.ct, iv: exist_obj.iv, s: exist_obj.s}
+                                            const auth = 'SEA{"m":{"ct":"'+exist_obj.ct+'","iv":"'+exist_obj.iv+'","s":"'+exist_obj.s+'"},"s":"'+exist_obj.sig+'"}'
+                                            verify_sig(auth, exist_obj.pub).then( res_sig => { 
+                                                if (res_sig) {
+                                                    to.next(data)
+                                                }
+                                            })
+                                        }
+                                    }    
+                                }
+                            } catch(error) {
+                
+                            }
+                        }
+                    })
+                } catch(error) {
+                    
+                }        
+            }
+        } else if (get) {
+            to.next(data)
+        }
+        
+    })
 })
 
 const gun = Gun(['https://peer.nevalab.space/gun'])
