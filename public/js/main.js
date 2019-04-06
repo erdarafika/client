@@ -533,7 +533,6 @@ const post = async(node, path, data, pair) => {
                 const hash = sha256(path + '.' + new Date().getTime() + '~' + pair.pub+seasig.m.message+seasig.s)
                 const obj = {
                     hash: hash,
-                    type: "post",
                     pubkey: pair.pub,
                     message: seasig.m.message,
                     sig: seasig.s,
