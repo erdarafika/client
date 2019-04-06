@@ -93,6 +93,9 @@ Gun.on('opt', function(ctx){
         }
         
     })
+    ctx.on('out', function(data){
+        to.next(data)
+    })
 })
 
 const gun = Gun(['https://peer.nevalab.space/gun'])
