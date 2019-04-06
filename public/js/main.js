@@ -161,7 +161,7 @@ const comment = function comment(id) {
                 message: msg
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
                 verify(sig, key.pub).then(result => {
 
                 })
@@ -192,7 +192,7 @@ const showreply = function showreply(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
-            const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+            const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
             if (sig !== undefined && msg.pubkey !== undefined) {
                 verify(sig, msg.pubkey).then(result => {
                     if (result.message) {
@@ -242,7 +242,7 @@ const showreplyanon = function showreplyanon(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
-            const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+            const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
             if (sig !== undefined && msg.pubkey !== undefined) {
                 verify(sig, msg.pubkey).then(result => {
                     if (result.message) {
@@ -411,7 +411,7 @@ const sig = function signed() {
         let div = document.createElement('div')
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
-        const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+        const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
@@ -443,7 +443,7 @@ const sig = function signed() {
                 message: message
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
                 verify(sig, key.pub).then(result => {
                     document.getElementById('message').value = ""
                 })
