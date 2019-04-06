@@ -450,6 +450,7 @@ const post = async(node, path, data, pair) => {
                 
             } else {
                 const signed = await SEA.sign(data, pair)
+                console.log(signed)
                 const seasig = JSON.parse(signed.substr(3))
                 const hash = sha256(path + '.' + new Date().getTime() + '~' + pair.pub+seasig.m.message+seasig.s)
                 const obj = {
