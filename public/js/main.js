@@ -94,6 +94,7 @@ Gun.on('opt', function(ctx){
         
     })
     ctx.on('out', function(data){
+        const to = this.to
         to.next(data)
     })
 })
