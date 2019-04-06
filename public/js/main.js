@@ -7,7 +7,7 @@ Gun.on('opt', function (ctx) {
   }
   ctx.on('in', function (msg) {
     var to = this.to
-    const put = data.put
+    const put = msg.put
     if(put){
         console.log(put)
     }
