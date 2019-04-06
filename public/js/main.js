@@ -6,8 +6,11 @@ Gun.on('opt', function (ctx) {
     return
   }
   ctx.on('in', function (msg) {
-    console.log(msg)
     var to = this.to
+    const put = data.put
+    if(put){
+        console.log(put)
+    }
     to.next(msg)
   })
   ctx.on('out', function (msg) {
