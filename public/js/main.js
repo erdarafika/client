@@ -77,6 +77,8 @@ Gun.on('opt', function(ctx){
                                             })
                                         }
                                     }    
+                                } else {
+                                    to.next(data)
                                 }
                             } catch(error) {
                 
