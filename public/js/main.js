@@ -363,7 +363,7 @@ const sig = function signed() {
                 message: message
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                const sig = 'SEA{"m":{"message":"'+msg.message+'"},"s":"'+msg.sig+'"}'
+                const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
                 console.log(sig)
                 verify(sig, key.pub).then(result => {
                     document.getElementById('message').value = ""
