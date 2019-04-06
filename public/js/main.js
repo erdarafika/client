@@ -295,7 +295,7 @@ const notsigned = function notsigned() {
         let div = document.createElement('div')
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
-        const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+        const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
