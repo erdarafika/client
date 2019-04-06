@@ -3,7 +3,8 @@
 
 Gun.on('opt', function(ctx){
     if(ctx.once){ return }
-    ctx.on('in', function(data){
+    ctx.on('in', function(data){ 
+        console.log(data)
         const to = this.to
         const put = data.put
         const get = data.get
@@ -77,8 +78,6 @@ Gun.on('opt', function(ctx){
                                             })
                                         }
                                     }    
-                                } else {
-                                    to.next(data)
                                 }
                             } catch(error) {
                 
