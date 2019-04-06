@@ -219,7 +219,7 @@ const notsigned = function notsigned() {
         const msg = JSON.parse(data)
         const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
-            verify(msg.signed, msg.pubkey).then(result => {
+            verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
