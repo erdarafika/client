@@ -86,7 +86,8 @@ const comment = function comment(id) {
                 message: msg
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                verify(msg.signed, key.pub).then(result => {
+                const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+                verify(sig, key.pub).then(result => {
 
                 })
             })
