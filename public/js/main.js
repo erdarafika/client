@@ -374,7 +374,7 @@ const notsigned = function notsigned() {
 
                 } else {
                     let pair = JSON.stringify(res)
-                    localStorage.setItem('pair', pair)
+                    // localStorage.setItem('pair', pair)
                     document.getElementById('password').value = ""
                     document.getElementById('pin').value = ""
                     // let el_signin = document.getElementById('form-signin')
