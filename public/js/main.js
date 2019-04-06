@@ -339,6 +339,8 @@ const notsigned = function notsigned() {
                                     let pair = JSON.stringify(res)
                                     localStorage.setItem('pair', pair)
                                     let el_signin = document.getElementById('form-signin')
+                                    let el_feed = document.getElementsByClassName('item-view-header')
+                                    el_feed.remove()
                                     el_signin.remove()
                                     sig()
                                 }
