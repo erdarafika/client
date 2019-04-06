@@ -405,8 +405,6 @@ const register = async(username, password, salt) => {
             s: enc.s, 
             sig: sigm.s
         }
-        console.log(obj) 
-        console.log(signed)
         const jstring = JSON.stringify(obj)
         const user = await gun.get(username).get('sea').put(jstring)
         return user
@@ -451,12 +449,16 @@ const post = async(node, path, data, pair) => {
             } else {
                 const signed = await SEA.sign(data, pair)
                 const seasig = JSON.parse(signed.substr(3))
+                const hash = sha256(path + '.' + new Date().getTime() + '~' + pair.pub+seasig.m.message+seasig.s)
                 const obj = {
-                    hash: sha256(path + '.' + new Date().getTime() + '~' + pair.pub),
+                    hash: hash,
+                    type: "post",
                     pubkey: pair.pub,
-                    signed: signed,
+                    message: signed.m.message,
+                    sig: signed.m.s,
                     timestamp: new Date().getTime()
                 }
+                console.log(obj)
                 const jstring = JSON.stringify(obj)
                 const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
                 return result
