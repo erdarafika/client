@@ -116,8 +116,9 @@ const showreply = function showreply(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
-            if (msg.signed !== undefined && msg.pubkey !== undefined) {
-                verify(msg.signed, msg.pubkey).then(result => {
+            const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+            if (sig !== undefined && msg.pubkey !== undefined) {
+                verify(sig, msg.pubkey).then(result => {
                     if (result.message) {
                         div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
@@ -165,8 +166,9 @@ const showreplyanon = function showreplyanon(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
-            if (msg.signed !== undefined && msg.pubkey !== undefined) {
-                verify(msg.signed, msg.pubkey).then(result => {
+            const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+            if (sig !== undefined && msg.pubkey !== undefined) {
+                verify(sig, msg.pubkey).then(result => {
                     if (result.message) {
                         div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
@@ -333,8 +335,9 @@ const sig = function signed() {
         let div = document.createElement('div')
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
-        if (msg.signed !== undefined && msg.pubkey !== undefined) {
-            verify(msg.signed, msg.pubkey).then(result => {
+        const sig = 'SEA{"m":{"message":"'+ msg.message +'"},"s":"'+ msg.sig +'"}'
+        if (msg.sig !== undefined && msg.pubkey !== undefined) {
+            verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
                     div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
