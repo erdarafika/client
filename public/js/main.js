@@ -520,6 +520,24 @@ const verify = async(data, pub) => {
     }
 }
 
+const encrypt = async(data, pub) => {
+    try {
+        const result = await SEA.encrypt(data, pub)
+        return result
+    } catch (error) {
+
+    }
+}
+
+const decrypt = async(data, pub) => {
+    try {
+        const result = await SEA.decrypt(data, pub)
+        return result
+    } catch (error) {
+
+    }
+}
+
 const post = async(node, path, data, pair) => {
     if (pair) {
         try {
