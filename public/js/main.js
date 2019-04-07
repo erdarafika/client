@@ -558,24 +558,6 @@ const secret = async(epub, pair) => {
     }
 }
 
-const dif_enc = async(data, secret) => {
-    try {
-        const result = await SEA.encrypt(data, secret);
-        return result
-    } catch (error) {
-
-    }
-}
-
-const dif_dec = async(data, secret) => {
-    try {
-        const result = await SEA.decrypt(data, secret);
-        return result
-    } catch (error) {
-
-    }
-}
-
 const post = async(node, path, data, pair) => {
     if (pair) {
         try {
