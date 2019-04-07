@@ -511,6 +511,15 @@ const signin = async(password, salt, auth) => {
     }
 }
 
+const sign = async(data, pub) => {
+    try {
+        const result = await SEA.sign(data, pub)
+        return result
+    } catch (error) {
+
+    }
+}
+
 const verify = async(data, pub) => {
     try {
         const result = await SEA.verify(data, pub)
