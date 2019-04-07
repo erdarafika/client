@@ -549,18 +549,27 @@ const decrypt = async(data, pub) => {
 
 // Elliptic-curve Diffie–Hellman
 
-const dif_enc = async(data, epub, pair) => {
+const secret = async(epub, pair) => {
     try {
-        const result = await SEA.encrypt(data, await SEA.secret(epub, pair));
+        const result = await SEA.secret(epub, pair);
         return result
     } catch (error) {
 
     }
 }
 
-const dif_dec = async(data, epub, pair) => {
+const dif_enc = async(data, secret) => {
     try {
-        const result = await SEA.decrypt(data, await SEA.secret(epub, pair));
+        const result = await SEA.encrypt(data, secret);
+        return result
+    } catch (error) {
+
+    }
+}
+
+const dif_dec = async(data, secret) => {
+    try {
+        const result = await SEA.decrypt(data, secret);
         return result
     } catch (error) {
 
