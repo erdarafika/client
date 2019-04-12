@@ -676,14 +676,14 @@ const recordAudio = () =>
           const audio = new Audio(audioUrl);
           const play = () => audio.play();
           blob2abuff(audioBlob).then(data => {
-             const uint8View = new Uint8Array(data);
-             const hex = buf2hex(uint8View)
-	     const pair = localStorage.getItem('pair')
-             const key = JSON.parse(pair)
-             post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+            const uint8View = new Uint8Array(data);
+            const hex = buf2hex(uint8View)
+	        const pair = localStorage.getItem('pair')
+            const key = JSON.parse(pair)
+            post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
                 const msg = JSON.parse(res)
                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-             })
+            })
           })
           resolve({ audioBlob, audioUrl, play });
         });
@@ -714,14 +714,14 @@ const commentAudio = () =>
           const audio = new Audio(audioUrl);
           const play = () => audio.play();
           blob2abuff(audioBlob).then(data => {
-             const uint8View = new Uint8Array(data);
-             const hex = buf2hex(uint8View)
-	     const pair = localStorage.getItem('pair')
-             const key = JSON.parse(pair)
-             post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+            const uint8View = new Uint8Array(data);
+            const hex = buf2hex(uint8View)
+	        const pair = localStorage.getItem('pair')
+            const key = JSON.parse(pair)
+            post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
                 const msg = JSON.parse(res)
                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-             })
+            })
           })
           resolve({ audioBlob, audioUrl, play });
         });
@@ -744,6 +744,18 @@ const handleAction = async () => {
   audio.play();
   await sleep(9000);
   actionButton.disabled = false;
+}
+
+const comAudio = async () => {
+    const recorder = await commentAudio();
+    const actionButton = document.getElementById('actAudio');
+    actionButton.disabled = true;
+    recorder.start();
+    await sleep(9000);
+    const audio = await recorder.stop();
+    audio.play();
+    await sleep(9000);
+    actionButton.disabled = false;
 }
 
 class App {
