@@ -22,7 +22,7 @@ Gun.on('opt', function (ctx) {
                     if (pubkey == 'undefined' || pubkey.length < 87) {
                         
                     } else {
-                        const sig = "SEA"+JSON.stringify({m: {message: obj.message}, s: obj.sig})
+                        const sig = "SEA"+JSON.stringify({m: {message: obj.message, type: obj.type}, s: obj.sig})
                         verify_sig(sig, pubkey).then( res => {
                             const post = res.message
                             try {
@@ -91,7 +91,13 @@ Gun.on('opt', function (ctx) {
 const gun = Gun(['https://peer.nevalab.space/gun'])
 const SEA = Gun.SEA
 const now = moment();
-const main = document.getElementById('main')
+const main = document.getElementById('main') 
+
+const toHexString = function toHexString(byteArray) {
+  return Array.prototype.map.call(byteArray, function(byte) {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+  }).join('');
+}
 
 const smartTruncate = function smartTruncate(string, length) {
     var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
@@ -130,7 +136,7 @@ const count = function count() {
     var msg = document.getElementsByClassName("msg")[0],
         charLeftLabel = "char-left",
         charLeft = document.getElementsByClassName(charLeftLabel)[0],
-        maxChar = 10000,
+        maxChar = 200,
         maxCharWarn = 20;
 
     // show characters left at start
@@ -156,10 +162,10 @@ const comment = function comment(id) {
         const key = JSON.parse(pair)
         if (message) {
             post(id, 'replies', {
-                message: msg
+                message: msg, type: "text"
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
                 verify(sig, key.pub).then(result => {
 
                 })
@@ -190,7 +196,7 @@ const showreply = function showreply(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
-            const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
+            const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
             if (sig !== undefined && msg.pubkey !== undefined) {
                 verify(sig, msg.pubkey).then(result => {
                     if (result.message) {
@@ -240,7 +246,7 @@ const showreplyanon = function showreplyanon(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
-            const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
+            const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
             if (sig !== undefined && msg.pubkey !== undefined) {
                 verify(sig, msg.pubkey).then(result => {
                     if (result.message) {
@@ -293,10 +299,30 @@ const notsigned = function notsigned() {
         let div = document.createElement('div')
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
-        const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
+        const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
+                const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                const audioUrl = URL.createObjectURL(blob);
                 if (result.message) {
+                   if (msg.type === "audio") {
+                    div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
+                        <div style="line-height: 1.42857143em">
+                           <audio id="${msg.timestamp}" controls>                           
+                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                           </audio>
+                        </div>
+                        <p class="meta" style="font-size: .9em">
+                        ${moment(msg.timestamp).fromNow()}
+                        </p>
+                        <div class="comment" id="${msg.hash}">
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                        </div>
+                    `
+                   } else if (msg.type === "text") {
                     div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
                         ${smartTruncate(msg.pubkey, 25)}
@@ -309,7 +335,9 @@ const notsigned = function notsigned() {
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                         </div>
                     `
-                }
+                  }
+               }
+
             })
         }
         target.parentNode.insertBefore(div, target.nextSibling);
@@ -398,8 +426,8 @@ const sig = function signed() {
             ${smartTruncate(pubkey.pub, 25)}
             <textarea id="message" class="msg" placeholder="Write something ..." onclick="count()"></textarea>
             <div class="comment">
-                <span class="toggle"><a id="share">[ Post ]</a></span> <span class="toggle"><a id="signout">[ Sign Out ]</a></span> <span class="char-left"></span>
-            </div>
+                <span class="toggle"><a id="share">[ Post ]</a></span> <span class="toggle" id="action" onclick="handleAction()">[ Voice Post]</span> <span class="char-left"></span>
+            <adiv>
         </div>
         `
     main.appendChild(p)
@@ -409,15 +437,22 @@ const sig = function signed() {
         let div = document.createElement('div')
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
-        const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
+        const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
+                const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                const audioUrl = URL.createObjectURL(blob);
                 if (result.message) {
+                   if (msg.type === "audio") {
                     div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
                         ${smartTruncate(msg.pubkey, 25)}
                         </p>
-                        <div style="line-height: 1.42857143em">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
+                        <div style="line-height: 1.42857143em">
+                           <audio id="${msg.timestamp}" controls>                           
+                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                           </audio>
+                        </div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()}
                         </p>
@@ -425,6 +460,20 @@ const sig = function signed() {
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
                         </div>
                     `
+                   } else if (msg.type === "text") {
+                    div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
+                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
+                        <p class="meta" style="font-size: .9em">
+                        ${moment(msg.timestamp).fromNow()}
+                        </p>
+                        <div class="comment" id="${msg.hash}">
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
+                        </div>
+                    `
+                  }
                 }
             })
         }
@@ -438,10 +487,10 @@ const sig = function signed() {
         const key = JSON.parse(pair)
         if (message) {
             post('posts', 'public', {
-                message: message
+                message: message, type: "text"
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message}, s: msg.sig})
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
                 verify(sig, key.pub).then(result => {
                     document.getElementById('message').value = ""
                 })
@@ -571,6 +620,7 @@ const post = async(node, path, data, pair) => {
                     hash: hash,
                     pubkey: pair.pub,
                     message: seasig.m.message,
+                    type: seasig.m.type,
                     sig: seasig.s,
                     timestamp: new Date().getTime()
                 }
@@ -582,6 +632,118 @@ const post = async(node, path, data, pair) => {
 
         }
     }
+}
+
+const blob2abuff = async (blob) => {
+    const result = new Response(blob).arrayBuffer();
+    return result;
+}
+
+const buf2hex = function buf2hex(buffer) {
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+}
+
+const hex2byte = function hex2byte(str) {
+  if (!str) {
+    return new Uint8Array();
+  }
+  
+  var a = [];
+  for (var i = 0, len = str.length; i < len; i+=2) {
+    a.push(parseInt(str.substr(i,2),16));
+  }
+  
+  return new Uint8Array(a);
+}
+
+const recordAudio = () =>
+  new Promise(async resolve => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const audioChunks = [];
+
+    mediaRecorder.addEventListener("dataavailable", event => {
+      audioChunks.push(event.data);
+    });
+
+    const start = () => mediaRecorder.start();
+
+    const stop = () =>
+      new Promise(resolve => {
+        mediaRecorder.addEventListener("stop", () => {
+          const audioBlob = new Blob(audioChunks);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          const play = () => audio.play();
+          blob2abuff(audioBlob).then(data => {
+             const uint8View = new Uint8Array(data);
+             const hex = buf2hex(uint8View)
+	     const pair = localStorage.getItem('pair')
+             const key = JSON.parse(pair)
+             post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+                const msg = JSON.parse(res)
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+             })
+          })
+          resolve({ audioBlob, audioUrl, play });
+        });
+
+        mediaRecorder.stop();
+      });
+
+    resolve({ start, stop });
+});
+
+const commentAudio = () =>
+  new Promise(async resolve => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const audioChunks = [];
+
+    mediaRecorder.addEventListener("dataavailable", event => {
+      audioChunks.push(event.data);
+    });
+
+    const start = () => mediaRecorder.start();
+
+    const stop = () =>
+      new Promise(resolve => {
+        mediaRecorder.addEventListener("stop", () => {
+          const audioBlob = new Blob(audioChunks);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          const play = () => audio.play();
+          blob2abuff(audioBlob).then(data => {
+             const uint8View = new Uint8Array(data);
+             const hex = buf2hex(uint8View)
+	     const pair = localStorage.getItem('pair')
+             const key = JSON.parse(pair)
+             post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+                const msg = JSON.parse(res)
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+             })
+          })
+          resolve({ audioBlob, audioUrl, play });
+        });
+
+        mediaRecorder.stop();
+      });
+
+    resolve({ start, stop });
+});
+
+const sleep = time => new Promise(resolve => setTimeout(resolve, time));
+
+const handleAction = async () => {
+  const recorder = await recordAudio();
+  const actionButton = document.getElementById('action');
+  actionButton.disabled = true;
+  recorder.start();
+  await sleep(9000);
+  const audio = await recorder.stop();
+  audio.play();
+  await sleep(9000);
+  actionButton.disabled = false;
 }
 
 class App {
