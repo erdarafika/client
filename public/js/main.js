@@ -295,7 +295,7 @@ const showreplyanon = function showreplyanon(id) {
                             ${moment(msg.timestamp).fromNow()}
                             </p>
                             <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                             </div>
                             `
                         }
@@ -315,7 +315,7 @@ const showreplyanon = function showreplyanon(id) {
                             ${moment(msg.timestamp).fromNow()}
                             </p>
                             <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                             </div>
                             `
                         }
@@ -376,7 +376,7 @@ const notsigned = function notsigned() {
                         ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                         </div>
                     `
                    } else if (msg.type === "text") {
