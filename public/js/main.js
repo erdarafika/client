@@ -186,6 +186,7 @@ const showreply = function showreply(id) {
                 <textarea id="msg.${id}" class="card w-100" style="height:100px;" placeholder="give your thoughts ..."></textarea>
                 <div class="comment">
                     <span class="toggle"><a onclick="comment('${id}')">[ Reply ]</a></span>
+                    <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">[ Reply Audio ]</a></span>
                 </div>
             </div>
         `
@@ -718,7 +719,7 @@ const commentAudio = () =>
             const hex = buf2hex(uint8View)
 	        const pair = localStorage.getItem('pair')
             const key = JSON.parse(pair)
-            post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+            post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
                 const msg = JSON.parse(res)
                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
             })
@@ -746,8 +747,8 @@ const handleAction = async () => {
   actionButton.disabled = false;
 }
 
-const comAudio = async () => {
-    const recorder = await commentAudio();
+const comAudio = async (id) => {
+    const recorder = await commentAudio(id);
     const actionButton = document.getElementById('actAudio');
     actionButton.disabled = true;
     recorder.start();
