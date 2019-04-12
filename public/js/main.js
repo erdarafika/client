@@ -202,12 +202,16 @@ const showreply = function showreply(id) {
                 if (sig !== undefined && msg.pubkey !== undefined) {
                     verify(sig, msg.pubkey).then(result => {
                         if (result.message) {
+                            const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                            const audioUrl = URL.createObjectURL(blob);
                             div.innerHTML = `
                             <p class="meta" style="font-size: .9em">
                             ${smartTruncate(msg.pubkey, 25)}
                             </p>
                             <div style="line-height: 1.42857143em;">
-                            
+                                <audio id="${msg.timestamp}" controls>                           
+                                    <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                                </audio>
                             </div>
                             <p class="meta" style="font-size: .9em">
                             ${moment(msg.timestamp).fromNow()}
