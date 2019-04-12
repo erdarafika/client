@@ -695,7 +695,7 @@ const recordAudio = () =>
     resolve({ start, stop });
 });
 
-const commentAudio = () =>
+const commentAudio = (id) =>
   new Promise(async resolve => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream);
