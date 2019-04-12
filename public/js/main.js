@@ -197,24 +197,48 @@ const showreply = function showreply(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
-            const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
-            if (sig !== undefined && msg.pubkey !== undefined) {
-                verify(sig, msg.pubkey).then(result => {
-                    if (result.message) {
-                        div.innerHTML = `
-                        <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
-                        </p>
-                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
-                        <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
-                        </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                        </div>
-                        `
-                    }
-                })
+            if (msg.type === "audio") {
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+                if (sig !== undefined && msg.pubkey !== undefined) {
+                    verify(sig, msg.pubkey).then(result => {
+                        if (result.message) {
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em;">
+                            
+                            </div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                            `
+                        }
+                    })
+                }
+            } else if( msg.type === "text") {
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+                if (sig !== undefined && msg.pubkey !== undefined) {
+                    verify(sig, msg.pubkey).then(result => {
+                        if (result.message) {
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                            `
+                        }
+                    })
+                }
             }
             target.appendChild(div)
             document.getElementById('show.'+id).setAttribute('onclick', "hide('"+id+"')")
