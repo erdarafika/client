@@ -121,7 +121,7 @@ const showreply = function showreply(id) {
                             const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
-                            audio.play();
+                            // audio.play();
                             // div.innerHTML = `
                             // <p class="meta" style="font-size: .9em">
                             // ${smartTruncate(msg.pubkey, 25)}
@@ -673,23 +673,24 @@ const recordAudio = () =>
 });
 
 const commentAudio = (id) =>
-navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
-    recordSegments(stream);
+  new Promise(async resolve => {
+    const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const audioChunks = [];
+
+    mediaRecorder.addEventListener("dataavailable", event => {
+      audioChunks.push(event.data);
     });
-  const segments = [];
-  function recordSegments(stream){
-    let int = setInterval(()=>{
-      if(segments.length >= 10){
-        clearInterval(int);
-        stream.getTracks().forEach(t=>t.stop());
-        return;
-        }
-      const chunks = [];
-      const rec = new MediaRecorder(stream);
-      rec.ondataavailable = e => chunks.push(e.data);
-      rec.onstop = e => {
-          segments.push(new Blob(chunks));
-          const audioBlob = new Blob(chunks)
+
+    const start = () => mediaRecorder.start();
+
+    const stop = () =>
+      new Promise(resolve => {
+        mediaRecorder.addEventListener("stop", () => {
+          const audioBlob = new Blob(audioChunks);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          const play = () => audio.play();
           blob2abuff(audioBlob).then(data => {
             const uint8View = new Uint8Array(data);
             const hex = buf2hex(uint8View)
@@ -700,47 +701,14 @@ navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
             })
           })
-        }
-      rec.start();
-      setTimeout(()=>rec.stop(), 1000);
-    }, 1000);
-  }
-//   new Promise(async resolve => {
-//     const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true });
-//     const mediaRecorder = new MediaRecorder(stream);
-//     const audioChunks = [];
+          resolve({ audioBlob, audioUrl, play });
+        });
 
-//     mediaRecorder.addEventListener("dataavailable", event => {
-//       audioChunks.push(event.data);
-//     });
+        mediaRecorder.stop();
+      });
 
-//     const start = () => mediaRecorder.start();
-
-//     const stop = () =>
-//       new Promise(resolve => {
-//         mediaRecorder.addEventListener("stop", () => {
-//           const audioBlob = new Blob(audioChunks);
-//           const audioUrl = URL.createObjectURL(audioBlob);
-//           const audio = new Audio(audioUrl);
-//           const play = () => audio.play();
-//           blob2abuff(audioBlob).then(data => {
-//             const uint8View = new Uint8Array(data);
-//             const hex = buf2hex(uint8View)
-// 	        const pair = localStorage.getItem('pair')
-//             const key = JSON.parse(pair)
-//             post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
-//                 const msg = JSON.parse(res)
-//                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-//             })
-//           })
-//           resolve({ audioBlob, audioUrl, play });
-//         });
-
-//         mediaRecorder.stop();
-//       });
-
-//     resolve({ start, stop });
-// });
+    resolve({ start, stop });
+});
 
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
@@ -757,15 +725,47 @@ const handleAction = async () => {
 }
 
 const comAudio = async (id) => {
-    const recorder = await commentAudio(id);
-    const actionButton = document.getElementById('actAudio');
-    actionButton.disabled = true;
-    recorder.start();
-    await sleep(9000);
-    const audio = await recorder.stop();
-    audio.play();
-    await sleep(9000);
-    actionButton.disabled = false;
+    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
+        recordSegments(stream);
+        });
+      const segments = [];
+      function recordSegments(stream){
+        let int = setInterval(()=>{
+          if(segments.length >= 10){
+            clearInterval(int);
+            stream.getTracks().forEach(t=>t.stop());
+            return;
+            }
+          const chunks = [];
+          const rec = new MediaRecorder(stream);
+          rec.ondataavailable = e => chunks.push(e.data);
+          rec.onstop = e => {
+              segments.push(new Blob(chunks));
+              const audioBlob = new Blob(chunks)
+              blob2abuff(audioBlob).then(data => {
+                const uint8View = new Uint8Array(data);
+                const hex = buf2hex(uint8View)
+                const pair = localStorage.getItem('pair')
+                const key = JSON.parse(pair)
+                post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
+                    const msg = JSON.parse(res)
+                    const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+                })
+              })
+            }
+          rec.start();
+          setTimeout(()=>rec.stop(), 1000);
+        }, 1000);
+      }
+    // const recorder = await commentAudio(id);
+    // const actionButton = document.getElementById('actAudio');
+    // actionButton.disabled = true;
+    // recorder.start();
+    // await sleep(9000);
+    // const audio = await recorder.stop();
+    // audio.play();
+    // await sleep(9000);
+    // actionButton.disabled = false;
 }
 
 class App {
