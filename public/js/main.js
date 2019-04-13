@@ -1,8 +1,8 @@
 /*** 
     Holla universe!
 ***/
-const presenter = new ScarletsMediaPresenter(../);
-const streamer = new ScarletsAudioStreamer(../);
+const presenter = new ScarletsMediaPresenter(../SFMediaStream.min.js);
+const streamer = new ScarletsAudioStreamer(../SFMediaStream.min.js);
 
 Gun.on('opt', function (ctx) {
   if (ctx.once) {
