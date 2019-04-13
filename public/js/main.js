@@ -529,7 +529,7 @@ const sig = function signed() {
                         ${moment(msg.timestamp).fromNow()}
                         </p>
                         <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
                         </div>
                     `
                   }
