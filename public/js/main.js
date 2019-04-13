@@ -275,8 +275,6 @@ const notsigned = function notsigned() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-        localStorage.removeItem('gun/')
-        localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
@@ -419,8 +417,6 @@ const sig = function signed() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-        localStorage.removeItem('gun/')
-        localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
