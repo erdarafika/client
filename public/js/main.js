@@ -185,8 +185,8 @@ const showreply = function showreply(id) {
             <div>
                 <textarea id="msg.${id}" class="card w-100" style="height:100px;" placeholder="give your thoughts ..."></textarea>
                 <div class="comment">
-                    <span class="toggle"><a onclick="comment('${id}')">[ Reply ]</a></span>
-                    <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">[ Reply Audio ]</a></span>
+                    <span class="toggle"><a onclick="comment('${id}')">Reply</a></span>
+                    <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">Voice Reply</a></span>
                 </div>
             </div>
         `
