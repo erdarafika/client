@@ -726,7 +726,39 @@ const comAudio = async (id) => {
     const recorder = await commentAudio(id);
     const actionButton = document.getElementById('actAudio');
     actionButton.disabled = true;
-    recorder.start();
+    // recorder.start();
+    new Promise(async resolve => {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        const audioChunks = [];
+    
+        mediaRecorder.addEventListener("dataavailable", event => {
+          audioChunks.push(event.data);
+        });
+    
+        // const start = () => mediaRecorder.start();
+        mediaRecorder.start();
+    
+        new Promise(resolve => {
+            mediaRecorder.addEventListener("stop", () => {
+              const audioBlob = new Blob(audioChunks);
+              const audioUrl = URL.createObjectURL(audioBlob);
+              const audio = new Audio(audioUrl);
+              const play = () => audio.play();
+              blob2abuff(audioBlob).then(data => {
+                const uint8View = new Uint8Array(data);
+                const hex = buf2hex(uint8View)
+                const pair = localStorage.getItem('pair')
+                const key = JSON.parse(pair)
+                post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
+                    const msg = JSON.parse(res)
+                    const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+                })
+              })
+              resolve({ audioBlob, audioUrl, play });
+            });
+        });
+    });
     // await sleep(9000);
     // const audio = await recorder.stop();
     // audio.play();
