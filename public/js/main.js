@@ -119,23 +119,23 @@ const showreply = function showreply(id) {
                             const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
-                            audio.play();
-                            // div.innerHTML = `
-                            // <p class="meta" style="font-size: .9em">
-                            // ${smartTruncate(msg.pubkey, 25)}
-                            // </p>
-                            // <div style="line-height: 1.42857143em;">
-                            //     <audio id="${msg.timestamp}" controls>                           
-                            //         <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                            //     </audio>
-                            // </div>
-                            // <p class="meta" style="font-size: .9em">
-                            // ${moment(msg.timestamp).fromNow()}
-                            // </p>
-                            // <div class="comment" id="${msg.hash}">
-                            //     <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                            // </div>
-                            // `
+                            // audio.play();
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em;">
+                                <audio id="${msg.timestamp}" controls>                           
+                                    <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                                </audio>
+                            </div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                            `
                         }
                     })
                 }
@@ -728,19 +728,10 @@ const comAudio = async (id) => {
     actionButton.disabled = true;
     recorder.start();
     await sleep(9000);
-    await recorder.stop();
-    recorder.start();
+    const audio = await recorder.stop();
+    audio.play();
     await sleep(9000);
-    await recorder.stop();
-    recorder.start();
-    await sleep(9000);
-    await recorder.stop();
-    recorder.start();
-    await sleep(9000);
-    await recorder.stop();
-    recorder.start();
-    await sleep(9000);
-    await recorder.stop();
+    actionButton.disabled = false;
 }
 
 class App {
