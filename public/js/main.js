@@ -695,7 +695,8 @@ const commentAudio = (id) =>
 
     });
 
-    const start = () => mediaRecorder.start();
+    // const start = () => mediaRecorder.start();
+    mediaRecorder.start();
 
     // const stop = () =>
     //   new Promise(resolve => {
@@ -720,7 +721,7 @@ const commentAudio = (id) =>
     //     mediaRecorder.stop();
     //   });
 
-    resolve({ start, stop });
+    // resolve({ start, stop });
 });
 
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
