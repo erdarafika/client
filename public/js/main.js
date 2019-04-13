@@ -2,7 +2,9 @@
     Holla universe!
 ***/
 
-const gun = Gun(['https://peer.nevalab.space/gun'])
+const peers = ['https://peer.nevalab.space/gun'];
+const opt = { peers: peers, localStorage: false, radisk: false };
+const gun = Gun(opt);
 const SEA = Gun.SEA
 const now = moment();
 const main = document.getElementById('main') 
