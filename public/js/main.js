@@ -1,6 +1,9 @@
 /*** 
     Holla universe!
 ***/
+const presenter = new ScarletsMediaPresenter(...);
+const streamer = new ScarletsAudioStreamer(...);
+
 Gun.on('opt', function (ctx) {
   if (ctx.once) {
     return
