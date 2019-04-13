@@ -732,17 +732,16 @@ const comAudio = async (id) => {
     audio.play();
     await sleep(9000);
     actionButton.disabled = false;
+    var i = 0, howManyTimes = 10;
+    function f(howManyTimes) {
+            console.log('hi')
+            i++;
+            if( i < howManyTimes ){
+                setTimeout( f, 3000 );
+            }
+    }
+    f();
 }
-
-var i = 0;
-function f(howManyTimes) {
-        console.log('hi')
-        i++;
-        if( i < howManyTimes ){
-            setTimeout( f, 3000 );
-        }
-}
-f(7);
 
 class App {
     constructor() {
