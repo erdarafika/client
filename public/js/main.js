@@ -275,6 +275,7 @@ const notsigned = function notsigned() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+        localStorage.removeItem('gun/')
         localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
@@ -418,6 +419,7 @@ const sig = function signed() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+        localStorage.removeItem('gun/')
         localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
@@ -724,7 +726,7 @@ const handleAction = async () => {
       const segments = [];
       function recordSegments(stream){
         let int = setInterval(()=>{
-          if(segments.length >= 10){
+          if(segments.length >= 50){
             clearInterval(int);
             stream.getTracks().forEach(t=>t.stop());
             return;
