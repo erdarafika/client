@@ -728,15 +728,19 @@ const comAudio = async (id) => {
     actionButton.disabled = true;
     recorder.start();
     await sleep(9000);
-    const audio = await recorder.stop();
-    audio.play();
+    await recorder.stop();
+    recorder.start();
     await sleep(9000);
-    actionButton.disabled = false;
-    for (let i=1; i<10; i++) {
-        setTimeout( function timer(){
-            console.log('hi')
-        }, i*3000 );
-    }
+    await recorder.stop();
+    recorder.start();
+    await sleep(9000);
+    await recorder.stop();
+    recorder.start();
+    await sleep(9000);
+    await recorder.stop();
+    recorder.start();
+    await sleep(9000);
+    await recorder.stop();
 }
 
 class App {
