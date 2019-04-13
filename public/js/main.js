@@ -651,8 +651,6 @@ var ScarletsAudioStreamer = function(chunksDuration){
 	}
 }
 
-const streamer = new ScarletsAudioStreamer();
-
 Gun.on('opt', function (ctx) {
   if (ctx.once) {
     return
