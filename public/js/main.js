@@ -415,6 +415,8 @@ const sig = function signed() {
             verify(sig, msg.pubkey).then(result => {
                 const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
                 const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+                audio.play();
                 if (result.message) {
                    if (msg.type === "audio") {
                     div.innerHTML = `
