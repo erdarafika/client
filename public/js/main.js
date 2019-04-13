@@ -678,7 +678,7 @@ const commentAudio = (id) =>
 
     mediaRecorder.addEventListener("dataavailable", event => {
       audioChunks.push(event.data);
-      const audioBlob = new Blob(audioChunks);
+      const audioBlob = new Blob(event.data);
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
           const play = () => audio.play();
