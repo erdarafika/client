@@ -3,7 +3,7 @@
 ***/
 
 const peers = ['https://peer.nevalab.space/gun'];
-const opt = { peers: peers, localStorage: false, radisk: false };
+const opt = { peers: peers, localStorage: smartTruncate, radisk: false };
 const gun = Gun(opt);
 const SEA = Gun.SEA
 const now = moment();
