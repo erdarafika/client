@@ -125,9 +125,9 @@ const showreply = function showreply(id) {
                             ${smartTruncate(msg.pubkey, 25)}
                             </p>
                             <div style="line-height: 1.42857143em;">
-                                <audio id="${msg.timestamp}" controls>                           
+                                <video id="${msg.timestamp}" controls>                           
                                     <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                                </audio>
+                                </video>
                             </div>
                             <p class="meta" style="font-size: .9em">
                             ${moment(msg.timestamp).fromNow()}
@@ -203,9 +203,9 @@ const showreplyanon = function showreplyanon(id) {
                             ${smartTruncate(msg.pubkey, 25)}
                             </p>
                             <div style="line-height: 1.42857143em;">
-                                <audio id="${msg.timestamp}" controls>                           
+                                <video id="${msg.timestamp}" controls>                           
                                     <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                                </audio>
+                                </video>
                             </div>
                             <p class="meta" style="font-size: .9em">
                             ${moment(msg.timestamp).fromNow()}
@@ -284,9 +284,9 @@ const notsigned = function notsigned() {
                         ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div style="line-height: 1.42857143em">
-                           <audio id="${msg.timestamp}" controls>                           
+                           <video id="${msg.timestamp}" controls>                           
                               <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                           </audio>
+                           </video>
                         </div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()}
@@ -425,9 +425,9 @@ const sig = function signed() {
                         ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div style="line-height: 1.42857143em">
-                           <audio id="${msg.timestamp}" controls>                           
+                           <video id="${msg.timestamp}" controls>                           
                               <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                           </audio>
+                           </video>
                         </div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()}
@@ -634,7 +634,7 @@ const hex2byte = function hex2byte(str) {
 
 const recordAudio = () =>
   new Promise(async resolve => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true });
     const mediaRecorder = new MediaRecorder(stream);
     const audioChunks = [];
 
@@ -672,7 +672,7 @@ const recordAudio = () =>
 
 const commentAudio = (id) =>
   new Promise(async resolve => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true });
     const mediaRecorder = new MediaRecorder(stream);
     const audioChunks = [];
 
