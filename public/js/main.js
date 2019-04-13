@@ -732,15 +732,11 @@ const comAudio = async (id) => {
     audio.play();
     await sleep(9000);
     actionButton.disabled = false;
-    var i = 0, howManyTimes = 10;
-    function f(howManyTimes) {
+    for (let i=1; i<10; i++) {
+        setTimeout( function timer(){
             console.log('hi')
-            i++;
-            if( i < howManyTimes ){
-                setTimeout( f, 3000 );
-            }
+        }, i*3000 );
     }
-    f();
 }
 
 class App {
