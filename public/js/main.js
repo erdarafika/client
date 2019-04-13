@@ -727,11 +727,11 @@ const comAudio = async (id) => {
     const actionButton = document.getElementById('actAudio');
     actionButton.disabled = true;
     recorder.start();
-    // await sleep(9000);
+    await sleep(9000);
     const audio = await recorder.stop();
     audio.play();
-    // await sleep(9000);
-    // actionButton.disabled = false;
+    await sleep(9000);
+    actionButton.disabled = false;
 }
 
 class App {
