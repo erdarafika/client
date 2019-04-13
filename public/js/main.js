@@ -1,3 +1,6 @@
+/*** 
+    Holla universe!
+***/
 Gun.on('opt', function (ctx) {
   if (ctx.once) {
     return
