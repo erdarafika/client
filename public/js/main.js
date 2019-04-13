@@ -275,6 +275,7 @@ const notsigned = function notsigned() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+        localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
                 const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
@@ -417,6 +418,7 @@ const sig = function signed() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+        localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
                 const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
@@ -716,7 +718,7 @@ const commentAudio = (id) =>
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 const handleAction = async () => {
-    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
+    navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
         recordSegments(stream);
         });
       const segments = [];
