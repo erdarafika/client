@@ -678,7 +678,14 @@ const commentAudio = (id) =>
 
     mediaRecorder.addEventListener("dataavailable", event => {
       audioChunks.push(event.data);
-      const audioBlob = new Blob([event.data]);
+    });
+
+    const start = () => mediaRecorder.start();
+
+    const stop = () =>
+      new Promise(resolve => {
+        mediaRecorder.addEventListener("stop", () => {
+          const audioBlob = new Blob(audioChunks);
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
           const play = () => audio.play();
@@ -692,36 +699,13 @@ const commentAudio = (id) =>
                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
             })
           })
+          resolve({ audioBlob, audioUrl, play });
+        });
 
-    });
+        mediaRecorder.stop();
+      });
 
-    // const start = () => mediaRecorder.start();
-    mediaRecorder.start();
-
-    // const stop = () =>
-    //   new Promise(resolve => {
-    //     mediaRecorder.addEventListener("stop", () => {
-    //       const audioBlob = new Blob(audioChunks);
-    //       const audioUrl = URL.createObjectURL(audioBlob);
-    //       const audio = new Audio(audioUrl);
-    //       const play = () => audio.play();
-    //       blob2abuff(audioBlob).then(data => {
-    //         const uint8View = new Uint8Array(data);
-    //         const hex = buf2hex(uint8View)
-	//         const pair = localStorage.getItem('pair')
-    //         const key = JSON.parse(pair)
-    //         post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
-    //             const msg = JSON.parse(res)
-    //             const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-    //         })
-    //       })
-    //       resolve({ audioBlob, audioUrl, play });
-    //     });
-
-    //     mediaRecorder.stop();
-    //   });
-
-    // resolve({ start, stop });
+    resolve({ start, stop });
 });
 
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
@@ -731,11 +715,11 @@ const handleAction = async () => {
   const actionButton = document.getElementById('action');
   actionButton.disabled = true;
   recorder.start();
-//   await sleep(9000);
-//   const audio = await recorder.stop();
-//   audio.play();
-//   await sleep(9000);
-//   actionButton.disabled = false;
+  await sleep(9000);
+  const audio = await recorder.stop();
+  audio.play();
+  await sleep(9000);
+  actionButton.disabled = false;
 }
 
 const comAudio = async (id) => {
