@@ -279,10 +279,10 @@ const notsigned = function notsigned() {
         localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
-                const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
-                const audioUrl = URL.createObjectURL(blob);
                 if (result.message) {
                    if (msg.type === "audio") {
+                    const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                    const audioUrl = URL.createObjectURL(blob);
                     const audio = new Audio(audioUrl);
                     audio.play();
                     // div.innerHTML = `
@@ -423,11 +423,11 @@ const sig = function signed() {
         localStorage.removeItem('gap/gun/')
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
-                const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
-                const audioUrl = URL.createObjectURL(blob);
-                const audio = new Audio(audioUrl);
                 if (result.message) {
                    if (msg.type === "audio") {
+                    const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                    const audioUrl = URL.createObjectURL(blob);
+                    const audio = new Audio(audioUrl);
                     audio.play();
                     // div.innerHTML = `
                     //     <p class="meta" style="font-size: .9em">
