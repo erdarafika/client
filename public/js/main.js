@@ -281,22 +281,24 @@ const notsigned = function notsigned() {
                 const audioUrl = URL.createObjectURL(blob);
                 if (result.message) {
                    if (msg.type === "audio") {
-                    div.innerHTML = `
-                        <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
-                        </p>
-                        <div style="line-height: 1.42857143em">
-                           <video id="${msg.timestamp}" controls>                           
-                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                           </video>
-                        </div>
-                        <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
-                        </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
-                        </div>
-                    `
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                    // div.innerHTML = `
+                    //     <p class="meta" style="font-size: .9em">
+                    //     ${smartTruncate(msg.pubkey, 25)}
+                    //     </p>
+                    //     <div style="line-height: 1.42857143em">
+                    //        <video id="${msg.timestamp}" controls>                           
+                    //           <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                    //        </video>
+                    //     </div>
+                    //     <p class="meta" style="font-size: .9em">
+                    //     ${moment(msg.timestamp).fromNow()}
+                    //     </p>
+                    //     <div class="comment" id="${msg.hash}">
+                    //         <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
+                    //     </div>
+                    // `
                    } else if (msg.type === "text") {
                     div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
@@ -422,22 +424,23 @@ const sig = function signed() {
                 const audio = new Audio(audioUrl);
                 if (result.message) {
                    if (msg.type === "audio") {
-                    div.innerHTML = `
-                        <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
-                        </p>
-                        <div style="line-height: 1.42857143em">
-                           <video id="${msg.timestamp}" controls>                           
-                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                           </video>
-                        </div>
-                        <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
-                        </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                        </div>
-                    `
+                    audio.play();
+                    // div.innerHTML = `
+                    //     <p class="meta" style="font-size: .9em">
+                    //     ${smartTruncate(msg.pubkey, 25)}
+                    //     </p>
+                    //     <div style="line-height: 1.42857143em">
+                    //        <video id="${msg.timestamp}" controls>                           
+                    //           <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                    //        </video>
+                    //     </div>
+                    //     <p class="meta" style="font-size: .9em">
+                    //     ${moment(msg.timestamp).fromNow()}
+                    //     </p>
+                    //     <div class="comment" id="${msg.hash}">
+                    //         <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                    //     </div>
+                    // `
                    } else if (msg.type === "text") {
                     div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
@@ -713,15 +716,47 @@ const commentAudio = (id) =>
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 const handleAction = async () => {
-  const recorder = await recordAudio();
-  const actionButton = document.getElementById('action');
-  actionButton.disabled = true;
-  recorder.start();
-  await sleep(9000);
-  const audio = await recorder.stop();
-  audio.play();
-  await sleep(9000);
-  actionButton.disabled = false;
+    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
+        recordSegments(stream);
+        });
+      const segments = [];
+      function recordSegments(stream){
+        let int = setInterval(()=>{
+          if(segments.length >= 10){
+            clearInterval(int);
+            stream.getTracks().forEach(t=>t.stop());
+            return;
+            }
+          const chunks = [];
+          const rec = new MediaRecorder(stream);
+          rec.ondataavailable = e => chunks.push(e.data);
+          rec.onstop = e => {
+              segments.push(new Blob(chunks));
+              const audioBlob = new Blob(chunks)
+              blob2abuff(audioBlob).then(data => {
+                const uint8View = new Uint8Array(data);
+                const hex = buf2hex(uint8View)
+                const pair = localStorage.getItem('pair')
+                const key = JSON.parse(pair)
+                post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+                    const msg = JSON.parse(res)
+                    const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+                })
+              })
+            }
+          rec.start();
+          setTimeout(()=>rec.stop(), 1000);
+        }, 1000);
+      }
+//   const recorder = await recordAudio();
+//   const actionButton = document.getElementById('action');
+//   actionButton.disabled = true;
+//   recorder.start();
+//   await sleep(9000);
+//   const audio = await recorder.stop();
+//   audio.play();
+//   await sleep(9000);
+//   actionButton.disabled = false;
 }
 
 const comAudio = async (id) => {
