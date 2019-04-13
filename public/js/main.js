@@ -483,7 +483,9 @@ const sig = function signed() {
             ${smartTruncate(pubkey.pub, 25)}
             <textarea id="message" class="msg" placeholder="Write something ..." onclick="count()"></textarea>
             <div class="comment">
-                <span class="toggle"><a id="share">[ Post ]</a></span> <span class="toggle" id="action" onclick="handleAction()">[ Voice Post]</span> <span class="char-left"></span>
+                <span class="toggle"><a id="share">Post</a></span> 
+                <span class="toggle"><a onclick="handleAction()" id="action"> Voice Post </a></span
+                <span class="char-left"></span>
             <adiv>
         </div>
         `
