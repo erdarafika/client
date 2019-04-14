@@ -177,7 +177,6 @@ const showreply = function showreply(id) {
                     <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">Voice Reply</a></span>
                 </div>
             </div>
-            <video style="width: 100%;height: 360px;border: solid 1px;"></video>
         `
         target.parentNode.insertBefore(div, target.nextSibling);
 
@@ -481,6 +480,7 @@ const sig = function signed() {
                 <span class="toggle"><a onclick="handleAction()" id="action"> Voice Post </a></span>
                 <span class="char-left"></span>
             <adiv>
+            <video style="width: 100%;height: 360px;border: solid 1px;"></video>
         </div>
         `
     main.appendChild(p)
