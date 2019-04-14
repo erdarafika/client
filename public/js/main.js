@@ -204,6 +204,7 @@ const showreply = function showreply(id) {
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
                             queue.push(audioUrl)
+                            console.log(audioUrl)
                             // audio.play();
                             // div.innerHTML = `
                             // <p class="meta" style="font-size: .9em">
