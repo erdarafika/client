@@ -119,11 +119,6 @@ const showreply = function showreply(id) {
                     <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">Voice Reply</a></span>
                 </div>
             </div>
-            <div style="line-height: 1.42857143em;">
-                <video id="streaming" controls>                           
-                    
-                </video>
-            </div>
         `
         target.parentNode.insertBefore(div, target.nextSibling);
 
