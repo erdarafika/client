@@ -10,6 +10,18 @@ const now = moment();
 const main = document.getElementById('main') 
 const queue = []
 
+// Check that browser has support for media codec
+var mimeCodec = 'video/webm; codecs="vp8"';
+console.log(MediaSource.isTypeSupported(mimeCodec));
+// Create Media Source
+var mediaSource = new MediaSource(); // mediaSource.readyState === 'closed'
+// Get video element
+// var video = document.querySelector('video');
+// // Attach media source to video element
+// video.src = URL.createObjectURL(mediaSource);
+// Wait for media source to be open
+mediaSource.addEventListener('sourceopen', handleSourceOpen.bind(mediaSource));
+
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
     return ('0' + (byte & 0xFF).toString(16)).slice(-2);
@@ -825,17 +837,7 @@ class App {
         } else {
             notsigned()
         }
-        // Check that browser has support for media codec
-var mimeCodec = 'video/webm; codecs="vp8"';
-console.log(MediaSource.isTypeSupported(mimeCodec));
-// Create Media Source
-var mediaSource = new MediaSource(); // mediaSource.readyState === 'closed'
-// Get video element
-// var video = document.querySelector('video');
-// // Attach media source to video element
-// video.src = URL.createObjectURL(mediaSource);
-// Wait for media source to be open
-mediaSource.addEventListener('sourceopen', handleSourceOpen.bind(mediaSource));
+
 function handleSourceOpen() {
   var mediaSource = this; // mediaSource.readyState === 'open'
   var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
