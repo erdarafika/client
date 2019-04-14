@@ -860,10 +860,10 @@ const handleAction = async () => {
     const actionButton = document.getElementById('action');
     actionButton.disabled = true;
     recorder.start();
-    await sleep(42000);
+    await sleep(20000);
     const audio = await recorder.stop();
     audio.play();
-    await sleep(42000);
+    await sleep(5000);
     actionButton.disabled = false;
 }
 
