@@ -46,6 +46,28 @@ function handleSourceOpen() {
           </SegmentTemplate>
         </Representation>
   ***/
+ 
+
+function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
+    fetchArrayBuffer(segmentUrl, function(buf) {
+      sourceBuffer.addEventListener('updateend', function(ev) {
+        callback();
+      });
+      sourceBuffer.addEventListener('error', function(ev) {
+        callback(ev);
+      });
+      sourceBuffer.appendBuffer(buf);
+    });
+  }
+  function fetchArrayBuffer(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', url);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      callback(xhr.response);
+    };
+    xhr.send();
+  }
 
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
@@ -475,27 +497,6 @@ const sig = function signed() {
     video.play();
   });
 }
-
-function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
-    fetchArrayBuffer(segmentUrl, function(buf) {
-      sourceBuffer.addEventListener('updateend', function(ev) {
-        callback();
-      });
-      sourceBuffer.addEventListener('error', function(ev) {
-        callback(ev);
-      });
-      sourceBuffer.appendBuffer(buf);
-    });
-  }
-  function fetchArrayBuffer(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('get', url);
-    xhr.responseType = 'arraybuffer';
-    xhr.onload = function() {
-      callback(xhr.response);
-    };
-    xhr.send();
-  }
 
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
