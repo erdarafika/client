@@ -69,17 +69,6 @@ function handleSourceOpen() {
     video.play();
   });
 }
-const fetchSegmentAndAppend = function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
-  fetchArrayBuffer(segmentUrl, function(buf) {
-    sourceBuffer.addEventListener('updateend', function(ev) {
-      callback();
-    });
-    sourceBuffer.addEventListener('error', function(ev) {
-      callback(ev);
-    });
-    sourceBuffer.appendBuffer(buf);
-  });
-}
 
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
