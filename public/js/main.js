@@ -420,7 +420,7 @@ const sig = function signed() {
                 <span class="toggle"><a id="share">Post</a></span> 
                 <span class="toggle"><a onclick="handleAction()" id="action"> Voice Post </a></span>
                 <span class="char-left"></span>
-            <adiv>
+            </div>
             <video style="width: 100%;height: 360px;border: solid 1px;"></video>
         </div>
         `
