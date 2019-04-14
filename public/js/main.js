@@ -119,6 +119,11 @@ const showreply = function showreply(id) {
                     <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">Voice Reply</a></span>
                 </div>
             </div>
+            <div style="line-height: 1.42857143em;">
+                <video id="streaming" controls>                           
+                    
+                </video>
+            </div>
         `
         target.parentNode.insertBefore(div, target.nextSibling);
 
@@ -925,7 +930,7 @@ const comAudio = async (id) => {
 }
 
 const playvideo = function playvideo() {
-    var video = document.querySelector('video');
+    var video = document.getElementById('streaming')
     // Attach media source to video element
     video.src = URL.createObjectURL(mediaSource);
     mediaSource.addEventListener('sourceopen', handleSourceOpen.bind(mediaSource));
