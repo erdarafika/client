@@ -70,6 +70,27 @@ function handleSourceOpen() {
   });
 }
 
+function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
+    fetchArrayBuffer(segmentUrl, function(buf) {
+      sourceBuffer.addEventListener('updateend', function(ev) {
+        callback();
+      });
+      sourceBuffer.addEventListener('error', function(ev) {
+        callback(ev);
+      });
+      sourceBuffer.appendBuffer(buf);
+    });
+  }
+  function fetchArrayBuffer(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', url);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      callback(xhr.response);
+    };
+    xhr.send();
+  }
+
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
     return ('0' + (byte & 0xFF).toString(16)).slice(-2);
