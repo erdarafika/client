@@ -941,7 +941,7 @@ const playvideo = function playvideo() {
 
         mediaSource.duration = 6; // (51200 + 25600) / 12800
         // Fetch init segment (contains mp4 header)
-        fetchSegmentAndAppend("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000.dash", sourceBuffer, function() {
+        fetchSegmentAndAppend(queue[0], sourceBuffer, function() {
             function iter() {
                 // Pop segment from queue
                 var url = queue.shift();
