@@ -151,7 +151,7 @@ const showreply = function showreply(id) {
                             ${smartTruncate(msg.pubkey, 25)}
                             </p>
                             <div style="line-height: 1.42857143em;">
-                                <video id="${msg.timestamp}" controls>                           
+                                <video id="${msg.timestamp}" controls style="width:100%">                           
                                     <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
                                 </video>
                             </div>
@@ -243,7 +243,7 @@ const showreplyanon = function showreplyanon(id) {
                             ${smartTruncate(msg.pubkey, 25)}
                             </p>
                             <div style="line-height: 1.42857143em;">
-                                <video id="${msg.timestamp}" controls>                           
+                                <video id="${msg.timestamp}" controls style="width:100%">                           
                                     <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
                                 </video>
                             </div>
@@ -340,7 +340,7 @@ const notsigned = function notsigned() {
                         ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div style="line-height: 1.42857143em">
-                           <video id="${msg.timestamp}" controls>                           
+                           <video id="${msg.timestamp}" controls style="width:100%">                           
                               <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
                            </video>
                         </div>
