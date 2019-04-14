@@ -817,6 +817,12 @@ const comAudio = async (id) => {
     // actionButton.disabled = false;
 }
 
+const playvideo = function playvideo() {
+    var video = document.querySelector('video');
+    // Attach media source to video element
+    video.src = URL.createObjectURL(mediaSource);
+}
+
 class App {
     constructor() {
 
@@ -834,9 +840,6 @@ class App {
             notsigned()
         }
 
-        var video = document.querySelector('video');
-        // Attach media source to video element
-        video.src = URL.createObjectURL(mediaSource);
 mediaSource.addEventListener('sourceopen', handleSourceOpen.bind(mediaSource));
 function handleSourceOpen() {
   var mediaSource = this; // mediaSource.readyState === 'open'
