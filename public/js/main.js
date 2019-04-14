@@ -869,7 +869,7 @@ function handleSourceOpen() {
   fetchSegmentAndAppend("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000.dash", sourceBuffer, function() {
     function iter() {
       // Pop segment from queue
-      url = queue.shift();
+      var url = queue.shift();
       if (url === undefined) {
         return;
       }
