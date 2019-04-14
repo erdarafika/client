@@ -8,8 +8,8 @@ const gun = Gun(opt);
 const SEA = Gun.SEA
 const now = moment();
 const main = document.getElementById('main') 
-
 const queue = []
+
 // Check that browser has support for media codec
 var mimeCodec = 'audio/webm;codecs=opus';
 console.log(MediaSource.isTypeSupported(mimeCodec));
@@ -69,7 +69,7 @@ function handleSourceOpen() {
     video.play();
   });
 }
-function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
+const fetchSegmentAndAppend = function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
   fetchArrayBuffer(segmentUrl, function(buf) {
     sourceBuffer.addEventListener('updateend', function(ev) {
       callback();
