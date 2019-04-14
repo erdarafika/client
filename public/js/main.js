@@ -148,25 +148,25 @@ const showreply = function showreply(id) {
                             });
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
-                            queue.push(audioUrl)
-                            console.log(queue)
+                            // queue.push(audioUrl)
+                            // console.log(queue)
                             // audio.play();
-                            // div.innerHTML = `
-                            // <p class="meta" style="font-size: .9em">
-                            // ${smartTruncate(msg.pubkey, 25)}
-                            // </p>
-                            // <div style="line-height: 1.42857143em;">
-                            //     <video id="${msg.timestamp}" controls>                           
-                            //         <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                            //     </video>
-                            // </div>
-                            // <p class="meta" style="font-size: .9em">
-                            // ${moment(msg.timestamp).fromNow()}
-                            // </p>
-                            // <div class="comment" id="${msg.hash}">
-                            //     <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                            // </div>
-                            // `
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em;">
+                                <video id="${msg.timestamp}" controls>                           
+                                    <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
+                                </video>
+                            </div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                            `
                         }
                     })
                 }
@@ -240,7 +240,7 @@ const showreplyanon = function showreplyanon(id) {
                     verify(sig, msg.pubkey).then(result => {
                         if (result.message) {
                             const blob = new Blob([hex2byte(result.message)], {
-                                type: "audio/webm;codecs=opus"
+                                type: "video/webm;codecs=vp9"
                             });
                             const audioUrl = URL.createObjectURL(blob);
                             div.innerHTML = `
@@ -249,7 +249,7 @@ const showreplyanon = function showreplyanon(id) {
                             </p>
                             <div style="line-height: 1.42857143em;">
                                 <video id="${msg.timestamp}" controls>                           
-                                    <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                                    <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
                                 </video>
                             </div>
                             <p class="meta" style="font-size: .9em">
@@ -335,7 +335,7 @@ const notsigned = function notsigned() {
                 if (result.message) {
                     if (msg.type === "audio") {
                         const blob = new Blob([hex2byte(result.message)], {
-                            type: "audio/webm;codecs=opus"
+                            type: "video/webm;codecs=vp9"
                         });
                         const audioUrl = URL.createObjectURL(blob);
                         // const audio = new Audio(audioUrl);
@@ -346,7 +346,7 @@ const notsigned = function notsigned() {
                         </p>
                         <div style="line-height: 1.42857143em">
                            <video id="${msg.timestamp}" controls>                           
-                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                              <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
                            </video>
                         </div>
                         <p class="meta" style="font-size: .9em">
@@ -488,7 +488,7 @@ const sig = function signed() {
                 if (result.message) {
                     if (msg.type === "audio") {
                         const blob = new Blob([hex2byte(result.message)], {
-                            type: "audio/webm;codecs=opus"
+                            type: "video/webm;codecs=vp9"
                         });
                         const audioUrl = URL.createObjectURL(blob);
                         // const audio = new Audio(audioUrl);
@@ -499,7 +499,7 @@ const sig = function signed() {
                         </p>
                         <div style="line-height: 1.42857143em">
                            <video id="${msg.timestamp}" controls>                           
-                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                              <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
                            </video>
                         </div>
                         <p class="meta" style="font-size: .9em">
@@ -873,60 +873,60 @@ const handleAction = async () => {
 }
 
 const comAudio = async (id) => {
-    navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-    }).then(stream => {
-        recordSegments(stream);
-    });
-    const segments = [];
+    // navigator.mediaDevices.getUserMedia({
+    //     video: true,
+    //     audio: true
+    // }).then(stream => {
+    //     recordSegments(stream);
+    // });
+    // const segments = [];
 
-    function recordSegments(stream) {
-        let int = setInterval(() => {
-            if (segments.length >= 10) {
-                clearInterval(int);
-                stream.getTracks().forEach(t => t.stop());
-                return;
-            }
-            const chunks = [];
-            const rec = new MediaRecorder(stream);
-            rec.ondataavailable = e => chunks.push(e.data);
-            rec.onstop = e => {
-                segments.push(new Blob(chunks));
-                const audioBlob = new Blob(chunks)
-                blob2abuff(audioBlob).then(data => {
-                    const uint8View = new Uint8Array(data);
-                    const hex = buf2hex(uint8View)
-                    const pair = localStorage.getItem('pair')
-                    const key = JSON.parse(pair)
-                    post(id, 'replies', {
-                        message: hex,
-                        type: "audio"
-                    }, key).then(res => {
-                        const msg = JSON.parse(res)
-                        const sig = "SEA" + JSON.stringify({
-                            m: {
-                                message: msg.message,
-                                type: "audio"
-                            },
-                            s: msg.sig
-                        })
-                    })
-                })
-            }
-            rec.start();
-            setTimeout(() => rec.stop(), 1000);
-        }, 1000);
-    }
-    // const recorder = await commentAudio(id);
-    // const actionButton = document.getElementById('actAudio');
-    // actionButton.disabled = true;
-    // recorder.start();
-    // await sleep(9000);
-    // const audio = await recorder.stop();
-    // audio.play();
-    // await sleep(9000);
-    // actionButton.disabled = false;
+    // function recordSegments(stream) {
+    //     let int = setInterval(() => {
+    //         if (segments.length >= 10) {
+    //             clearInterval(int);
+    //             stream.getTracks().forEach(t => t.stop());
+    //             return;
+    //         }
+    //         const chunks = [];
+    //         const rec = new MediaRecorder(stream);
+    //         rec.ondataavailable = e => chunks.push(e.data);
+    //         rec.onstop = e => {
+    //             segments.push(new Blob(chunks));
+    //             const audioBlob = new Blob(chunks)
+    //             blob2abuff(audioBlob).then(data => {
+    //                 const uint8View = new Uint8Array(data);
+    //                 const hex = buf2hex(uint8View)
+    //                 const pair = localStorage.getItem('pair')
+    //                 const key = JSON.parse(pair)
+    //                 post(id, 'replies', {
+    //                     message: hex,
+    //                     type: "audio"
+    //                 }, key).then(res => {
+    //                     const msg = JSON.parse(res)
+    //                     const sig = "SEA" + JSON.stringify({
+    //                         m: {
+    //                             message: msg.message,
+    //                             type: "audio"
+    //                         },
+    //                         s: msg.sig
+    //                     })
+    //                 })
+    //             })
+    //         }
+    //         rec.start();
+    //         setTimeout(() => rec.stop(), 1000);
+    //     }, 1000);
+    // }
+    const recorder = await commentAudio(id);
+    const actionButton = document.getElementById('actAudio');
+    actionButton.disabled = true;
+    recorder.start();
+    await sleep(20000);
+    const audio = await recorder.stop();
+    audio.play();
+    await sleep(5000);
+    actionButton.disabled = false;
 }
 
 const playvideo = function playvideo() {
