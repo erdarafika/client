@@ -8,6 +8,7 @@ const gun = Gun(opt);
 const SEA = Gun.SEA
 const now = moment();
 const main = document.getElementById('main') 
+const queue = []
 
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
@@ -417,6 +418,8 @@ const sig = function signed() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+        queue.push(msg.pubkey)
+        console.log(queue)
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
