@@ -857,6 +857,9 @@ class App {
                 </SegmentTemplate>
                 </Representation>
         ***/
+       queue.push("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000-0.dash");
+        queue.push("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000-25600.dash");
+        queue.push("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000-51200.dash");
         
         mediaSource.duration = 6; // (51200 + 25600) / 12800
         // Fetch init segment (contains mp4 header)
