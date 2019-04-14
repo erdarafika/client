@@ -878,7 +878,7 @@ const comAudio = async (id) => {
 
     function recordSegments(stream) {
         let int = setInterval(() => {
-            if (segments.length >= 150) {
+            if (segments.length >= 10) {
                 clearInterval(int);
                 stream.getTracks().forEach(t => t.stop());
                 return;
