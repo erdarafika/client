@@ -11,7 +11,7 @@ const main = document.getElementById('main')
 const queue = []
 
 // Check that browser has support for media codec
-var mimeCodec = 'audio/webm;codecs=opus';
+var mimeCodec = 'video/webm; codecs="vp8"';
 console.log(MediaSource.isTypeSupported(mimeCodec));
 // Create Media Source
 var mediaSource = new MediaSource(); // mediaSource.readyState === 'closed'
