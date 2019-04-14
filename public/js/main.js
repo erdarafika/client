@@ -179,9 +179,6 @@ const showreply = function showreply(id) {
             target.appendChild(div)
             document.getElementById('show.'+id).setAttribute('onclick', "hide('"+id+"')")
             document.getElementById('show.'+id).innerHTML="[-]"
-            var video = document.querySelector('video');
-            // Attach media source to video element
-            video.src = URL.createObjectURL(mediaSource);
         });
     }
 }
@@ -837,6 +834,9 @@ class App {
             notsigned()
         }
 
+        var video = document.querySelector('video');
+        // Attach media source to video element
+        video.src = URL.createObjectURL(mediaSource);
 mediaSource.addEventListener('sourceopen', handleSourceOpen.bind(mediaSource));
 function handleSourceOpen() {
   var mediaSource = this; // mediaSource.readyState === 'open'
