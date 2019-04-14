@@ -195,6 +195,9 @@ const showreply = function showreply(id) {
             let div = document.createElement('div')
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
+            var video = document.querySelector('video');
+            // Attach media source to video element
+            video.src = URL.createObjectURL(mediaSource);
             if (msg.type === "audio") {
                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
                 if (sig !== undefined && msg.pubkey !== undefined) {
@@ -204,7 +207,6 @@ const showreply = function showreply(id) {
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
                             queue.push(audioUrl)
-                            console.log(audioUrl)
                             // audio.play();
                             // div.innerHTML = `
                             // <p class="meta" style="font-size: .9em">
@@ -495,9 +497,6 @@ const sig = function signed() {
         </div>
         `
     main.appendChild(p)
-    var video = document.querySelector('video');
-    // Attach media source to video element
-    video.src = URL.createObjectURL(mediaSource);
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
         let div = document.createElement('div')
