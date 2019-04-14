@@ -203,7 +203,7 @@ const showreply = function showreply(id) {
                 if (sig !== undefined && msg.pubkey !== undefined) {
                     verify(sig, msg.pubkey).then(result => {
                         if (result.message) {
-                            const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                            const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus,vp9"});
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
                             queue.push(audioUrl)
