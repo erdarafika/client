@@ -46,50 +46,6 @@ function handleSourceOpen() {
           </SegmentTemplate>
         </Representation>
   ***/
- 
-  mediaSource.duration = 6; // (51200 + 25600) / 12800
-  // Fetch init segment (contains mp4 header)
-  fetchSegmentAndAppend("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000.dash", sourceBuffer, function() {
-    function iter() {
-      // Pop segment from queue
-      url = queue.shift();
-      if (url === undefined) {
-        return;
-      }
-      // Download segment and append to source buffer
-      fetchSegmentAndAppend(url, sourceBuffer, function(err) {
-        if (err) {
-          console.error(err);
-        } else {
-          setTimeout(iter, 200);
-        }
-      });
-    }
-    iter();
-    video.play();
-  });
-}
-
-function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
-    fetchArrayBuffer(segmentUrl, function(buf) {
-      sourceBuffer.addEventListener('updateend', function(ev) {
-        callback();
-      });
-      sourceBuffer.addEventListener('error', function(ev) {
-        callback(ev);
-      });
-      sourceBuffer.appendBuffer(buf);
-    });
-  }
-  function fetchArrayBuffer(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('get', url);
-    xhr.responseType = 'arraybuffer';
-    xhr.onload = function() {
-      callback(xhr.response);
-    };
-    xhr.send();
-  }
 
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
@@ -497,6 +453,50 @@ const sig = function signed() {
     var video = document.querySelector('video');
     // Attach media source to video element
     video.src = URL.createObjectURL(mediaSource);
+    mediaSource.duration = 6; // (51200 + 25600) / 12800
+  // Fetch init segment (contains mp4 header)
+  fetchSegmentAndAppend("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000.dash", sourceBuffer, function() {
+    function iter() {
+      // Pop segment from queue
+      url = queue.shift();
+      if (url === undefined) {
+        return;
+      }
+      // Download segment and append to source buffer
+      fetchSegmentAndAppend(url, sourceBuffer, function(err) {
+        if (err) {
+          console.error(err);
+        } else {
+          setTimeout(iter, 200);
+        }
+      });
+    }
+    iter();
+    video.play();
+  });
+}
+
+function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
+    fetchArrayBuffer(segmentUrl, function(buf) {
+      sourceBuffer.addEventListener('updateend', function(ev) {
+        callback();
+      });
+      sourceBuffer.addEventListener('error', function(ev) {
+        callback(ev);
+      });
+      sourceBuffer.appendBuffer(buf);
+    });
+  }
+  function fetchArrayBuffer(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('get', url);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function() {
+      callback(xhr.response);
+    };
+    xhr.send();
+  }
+
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
         let div = document.createElement('div')
