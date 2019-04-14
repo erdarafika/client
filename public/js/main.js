@@ -802,7 +802,7 @@ const commentAudio = (id) =>
 // const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 // const handleAction = async () => {
-    navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
         recordSegments(stream);
         });
       const segments = [];
