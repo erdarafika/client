@@ -10,6 +10,77 @@ const now = moment();
 const main = document.getElementById('main') 
 const queue = []
 
+// Check that browser has support for media codec
+var mimeCodec = 'audio/webm;codecs=opus';
+console.log(MediaSource.isTypeSupported(mimeCodec));
+// Create Media Source
+var mediaSource = new MediaSource(); // mediaSource.readyState === 'closed'
+// Get video element
+var video = document.querySelector('video');
+// Attach media source to video element
+video.src = URL.createObjectURL(mediaSource);
+// Wait for media source to be open
+mediaSource.addEventListener('sourceopen', handleSourceOpen.bind(mediaSource));
+function handleSourceOpen() {
+  var mediaSource = this; // mediaSource.readyState === 'open'
+  var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+  /*** 
+    "Parse" manifest -> segments
+  
+        <Representation
+          id="video=1660000"
+          bandwidth="1660000"
+          width="1280"
+          height="720"
+          sar="1:1"
+          codecs="avc1.4D401F"
+          scanType="progressive">
+          <SegmentTemplate
+            timescale="12800"
+            initialization="vinn-$RepresentationID$.dash"
+            media="vinn-$RepresentationID$-$Time$.dash">
+            <SegmentTimeline>
+              <S t="0" d="25600" r="51" />
+              <S d="20992" />
+            </SegmentTimeline>
+          </SegmentTemplate>
+        </Representation>
+  ***/
+ 
+  mediaSource.duration = 6; // (51200 + 25600) / 12800
+  // Fetch init segment (contains mp4 header)
+  fetchSegmentAndAppend("https://testcontent.eyevinn.technology/mse-tutorial/vinn-video=1660000.dash", sourceBuffer, function() {
+    function iter() {
+      // Pop segment from queue
+      url = queue.shift();
+      if (url === undefined) {
+        return;
+      }
+      // Download segment and append to source buffer
+      fetchSegmentAndAppend(url, sourceBuffer, function(err) {
+        if (err) {
+          console.error(err);
+        } else {
+          setTimeout(iter, 200);
+        }
+      });
+    }
+    iter();
+    video.play();
+  });
+}
+function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
+  fetchArrayBuffer(segmentUrl, function(buf) {
+    sourceBuffer.addEventListener('updateend', function(ev) {
+      callback();
+    });
+    sourceBuffer.addEventListener('error', function(ev) {
+      callback(ev);
+    });
+    sourceBuffer.appendBuffer(buf);
+  });
+}
+
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
     return ('0' + (byte & 0xFF).toString(16)).slice(-2);
@@ -106,6 +177,7 @@ const showreply = function showreply(id) {
                     <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">Voice Reply</a></span>
                 </div>
             </div>
+            <video style="width: 100%;height: 360px;border: solid 1px;"></video>
         `
         target.parentNode.insertBefore(div, target.nextSibling);
 
@@ -122,7 +194,8 @@ const showreply = function showreply(id) {
                             const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
-                            audio.play();
+                            queue.push(audioUrl)
+                            // audio.play();
                             // div.innerHTML = `
                             // <p class="meta" style="font-size: .9em">
                             // ${smartTruncate(msg.pubkey, 25)}
@@ -418,7 +491,6 @@ const sig = function signed() {
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
         const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-        queue.push(msg.pubkey)
         console.log(queue)
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
@@ -679,87 +751,87 @@ const recordAudio = () =>
 });
 
 const commentAudio = (id) =>
-  new Promise(async resolve => {
-    const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
-    const audioChunks = [];
+//   new Promise(async resolve => {
+//     const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true });
+//     const mediaRecorder = new MediaRecorder(stream);
+//     const audioChunks = [];
 
-    mediaRecorder.addEventListener("dataavailable", event => {
-      audioChunks.push(event.data);
-    });
+//     mediaRecorder.addEventListener("dataavailable", event => {
+//       audioChunks.push(event.data);
+//     });
 
-    const start = () => mediaRecorder.start();
+//     const start = () => mediaRecorder.start();
 
-    const stop = () =>
-      new Promise(resolve => {
-        mediaRecorder.addEventListener("stop", () => {
-          const audioBlob = new Blob(audioChunks);
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const audio = new Audio(audioUrl);
-          const play = () => audio.play();
-          blob2abuff(audioBlob).then(data => {
-            const uint8View = new Uint8Array(data);
-            const hex = buf2hex(uint8View)
-	        const pair = localStorage.getItem('pair')
-            const key = JSON.parse(pair)
-            post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
-                const msg = JSON.parse(res)
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-            })
-          })
-          resolve({ audioBlob, audioUrl, play });
+//     const stop = () =>
+//       new Promise(resolve => {
+//         mediaRecorder.addEventListener("stop", () => {
+//           const audioBlob = new Blob(audioChunks);
+//           const audioUrl = URL.createObjectURL(audioBlob);
+//           const audio = new Audio(audioUrl);
+//           const play = () => audio.play();
+//           blob2abuff(audioBlob).then(data => {
+//             const uint8View = new Uint8Array(data);
+//             const hex = buf2hex(uint8View)
+// 	        const pair = localStorage.getItem('pair')
+//             const key = JSON.parse(pair)
+//             post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
+//                 const msg = JSON.parse(res)
+//                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+//             })
+//           })
+//           resolve({ audioBlob, audioUrl, play });
+//         });
+
+//         mediaRecorder.stop();
+//       });
+
+//     resolve({ start, stop });
+// });
+
+// const sleep = time => new Promise(resolve => setTimeout(resolve, time));
+
+// const handleAction = async () => {
+    navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+        recordSegments(stream);
         });
-
-        mediaRecorder.stop();
-      });
-
-    resolve({ start, stop });
-});
-
-const sleep = time => new Promise(resolve => setTimeout(resolve, time));
-
-const handleAction = async () => {
-    // navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-    //     recordSegments(stream);
-    //     });
-    //   const segments = [];
-    //   function recordSegments(stream){
-    //     let int = setInterval(()=>{
-    //       if(segments.length >= 50){
-    //         clearInterval(int);
-    //         stream.getTracks().forEach(t=>t.stop());
-    //         return;
-    //         }
-    //       const chunks = [];
-    //       const rec = new MediaRecorder(stream);
-    //       rec.ondataavailable = e => chunks.push(e.data);
-    //       rec.onstop = e => {
-    //           segments.push(new Blob(chunks));
-    //           const audioBlob = new Blob(chunks)
-    //           blob2abuff(audioBlob).then(data => {
-    //             const uint8View = new Uint8Array(data);
-    //             const hex = buf2hex(uint8View)
-    //             const pair = localStorage.getItem('pair')
-    //             const key = JSON.parse(pair)
-    //             post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
-    //                 const msg = JSON.parse(res)
-    //                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-    //             })
-    //           })
-    //         }
-    //       rec.start();
-    //       setTimeout(()=>rec.stop(), 1000);
-    //     }, 1000);
-    //   }
-    const recorder = await recordAudio();
-    const actionButton = document.getElementById('action');
-    actionButton.disabled = true;
-    recorder.start();
-    await sleep(42000);
-    const audio = await recorder.stop();
-    audio.play();
-    await sleep(42000);
-    actionButton.disabled = false;
+      const segments = [];
+      function recordSegments(stream){
+        let int = setInterval(()=>{
+          if(segments.length >= 150){
+            clearInterval(int);
+            stream.getTracks().forEach(t=>t.stop());
+            return;
+            }
+          const chunks = [];
+          const rec = new MediaRecorder(stream);
+          rec.ondataavailable = e => chunks.push(e.data);
+          rec.onstop = e => {
+              segments.push(new Blob(chunks));
+              const audioBlob = new Blob(chunks)
+              blob2abuff(audioBlob).then(data => {
+                const uint8View = new Uint8Array(data);
+                const hex = buf2hex(uint8View)
+                const pair = localStorage.getItem('pair')
+                const key = JSON.parse(pair)
+                post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+                    const msg = JSON.parse(res)
+                    const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+                })
+              })
+            }
+          rec.start();
+          setTimeout(()=>rec.stop(), 1000);
+        }, 1000);
+      }
+    // const recorder = await recordAudio();
+    // const actionButton = document.getElementById('action');
+    // actionButton.disabled = true;
+    // recorder.start();
+    // await sleep(42000);
+    // const audio = await recorder.stop();
+    // audio.play();
+    // await sleep(42000);
+    // actionButton.disabled = false;
 }
 
 const comAudio = async (id) => {
