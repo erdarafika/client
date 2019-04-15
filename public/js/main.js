@@ -16,7 +16,7 @@ var mimeCodec = 'video/webm;codecs=vp9';
 console.log(MediaSource.isTypeSupported(mimeCodec));
 var mediaSource = new MediaSource();
 
-Gun.on('opt', function (ctx) {
+gun.on('opt', function (ctx) {
     if (ctx.once) {
       return
     }
