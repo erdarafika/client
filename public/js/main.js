@@ -16,6 +16,19 @@ var mimeCodec = 'video/webm;codecs=vp9';
 console.log(MediaSource.isTypeSupported(mimeCodec));
 var mediaSource = new MediaSource();
 
+Gun.on('opt', function (ctx) {
+    if (ctx.once) {
+      return
+    }
+    ctx.on('out', function (msg) {
+      var to = this.to
+      msg.headers = {
+        token: 'token'
+      }
+      to.next(msg)
+    })
+})
+
 const toHexString = function toHexString(byteArray) {
     return Array.prototype.map.call(byteArray, function(byte) {
         return ('0' + (byte & 0xFF).toString(16)).slice(-2);
