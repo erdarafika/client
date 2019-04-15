@@ -25,6 +25,7 @@ Gun.on('opt', function (ctx) {
       msg.headers = {
         token: 'token'
       }
+      console.log(msg)
       to.next(msg)
     })
 })
