@@ -504,7 +504,7 @@ const sig = function signed() {
                     if (msg.type === "audio") {
                         // videoSourceBuffer.appendBuffer(hex2byte(result.message));
                         const blob = new Blob([hex2byte(result.message)], {
-                            type: 'video/mp4;codecs="h264"'
+                            type: 'video/webm;codecs=v9'
                         });
                         const audioUrl = URL.createObjectURL(blob);
                         console.log(audioUrl)
@@ -516,7 +516,7 @@ const sig = function signed() {
                         </p>
                         <div style="line-height: 1.42857143em">
                            <video id="${msg.timestamp}" controls style="width:100%">                           
-                              <source id="source" src="${audioUrl+'.mp4'}" type='video/mp4;codecs="h264"'/>                        
+                              <source id="source" src="${audioUrl}" type='video/webm;codecs=v9'/>                        
                            </video>
                         </div>
                         <p class="meta" style="font-size: .9em">
@@ -858,12 +858,12 @@ const handleAction = async () => {
             return;
             }
           const chunks = [];
-          var options = {mimeType: 'video/webm;codecs=h264'}; 
-          const rec = new MediaRecorder(stream, options);
+          // var options = {mimeType: 'video/webm;codecs=h264'}; 
+          const rec = new MediaRecorder(stream);
           rec.ondataavailable = e => chunks.push(e.data);
           rec.onstop = e => {
               segments.push(new Blob(chunks));
-              const audioBlob = new Blob(chunks, {type: 'video/mp4'})
+              const audioBlob = new Blob(chunks)
               blob2abuff(audioBlob).then(data => {
                 const uint8View = new Uint8Array(data);
                 const hex = buf2hex(uint8View)
