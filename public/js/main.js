@@ -516,7 +516,7 @@ const sig = function signed() {
                         </p>
                         <div style="line-height: 1.42857143em">
                            <video id="${msg.timestamp}" controls style="width:100%">                           
-                              <source id="source" src="${audioUrl}" type='video/mp4;codecs="h264"'/>                        
+                              <source id="source" src="${audioUrl+'.mp4'}" type='video/mp4;codecs="h264"'/>                        
                            </video>
                         </div>
                         <p class="meta" style="font-size: .9em">
