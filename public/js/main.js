@@ -506,10 +506,10 @@ const sig = function signed() {
                     if (msg.type === "audio") {
                         videoSourceBuffer.appendBuffer(hex2byte(result.message));
                         const blob = new Blob([hex2byte(result.message)], {
-                            type: "video/webm;codecs=vp9"
+                            type: 'video/mp4;codecs="h264"'
                         });
                         const audioUrl = URL.createObjectURL(blob);
-                        const audio = new Audio(audioUrl);
+                        // const audio = new Audio(audioUrl);
                         // audio.play();
                         div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
