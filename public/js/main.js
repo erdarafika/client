@@ -487,7 +487,7 @@ const sig = function signed() {
     const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
-    const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm;codecs="vp9"');
+    const videoSourceBuffer = myMediaSource.addSourceBuffer('video/mp4;codecs="h264"');
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
         let div = document.createElement('div')
@@ -859,7 +859,8 @@ const handleAction = async () => {
             return;
             }
           const chunks = [];
-          const rec = new MediaRecorder(stream);
+          var options = {mimeType: 'video/webm;codecs=h264'}; 
+          const rec = new MediaRecorder(stream, options);
           rec.ondataavailable = e => chunks.push(e.data);
           rec.onstop = e => {
               segments.push(new Blob(chunks));
