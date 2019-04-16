@@ -478,7 +478,7 @@ const sig = function signed() {
                 <span class="char-left"></span>
             </div>
             <div class="comment">
-                <video src="" id="my-video" width="1280px" height="720px" />
+                <video id="my-video" width="100%" height="320px" />
             </div>
         </div>
         `
