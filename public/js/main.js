@@ -864,7 +864,7 @@ const handleAction = async () => {
           rec.ondataavailable = e => chunks.push(e.data);
           rec.onstop = e => {
               segments.push(new Blob(chunks));
-              const audioBlob = new Blob(chunks)
+              const audioBlob = new Blob(chunks, {type: 'video/mp4'})
               blob2abuff(audioBlob).then(data => {
                 const uint8View = new Uint8Array(data);
                 const hex = buf2hex(uint8View)
