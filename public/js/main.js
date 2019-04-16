@@ -10,6 +10,20 @@ const opt = {
 const gun = Gun(opt);
 const SEA = Gun.SEA
 const now = moment();
+
+Gun.on('opt', function (ctx) {
+    if (ctx.once) {
+      return
+    }
+    ctx.on('out', function (msg) {
+      var to = this.to
+      msg.headers = {
+        token: 'thisIsTheTokenForReals'
+      }
+      to.next(msg)
+    })
+})
+
 const main = document.getElementById('main')
 const queue = []
 var mimeCodec = 'video/webm;codecs=vp9';
@@ -447,6 +461,14 @@ const notsigned = function notsigned() {
     }, false)
 }
 
+const videoTag = document.getElementById("my-video");
+const myMediaSource = new MediaSource();
+const url = URL.createObjectURL(myMediaSource);
+videoTag.src = url;
+
+const videoSourceBuffer = myMediaSource
+  .addSourceBuffer('video/webm;codecs="vp9"');
+
 const sig = function signed() {
     let user = localStorage.getItem('pair')
     let pubkey = JSON.parse(user)
@@ -462,6 +484,9 @@ const sig = function signed() {
                 <span class="toggle"><a id="share">Post</a></span> 
                 <span class="toggle"><a onclick="handleAction()" id="action"> Voice Post </a></span>
                 <span class="char-left"></span>
+            </div>
+            <div class="comment">
+                <video src="" id="my-video" width="1280px" height="720px" />
             </div>
         </div>
         `
@@ -482,28 +507,29 @@ const sig = function signed() {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
                     if (msg.type === "audio") {
-                        const blob = new Blob([hex2byte(result.message)], {
-                            type: "video/webm;codecs=vp9"
-                        });
-                        const audioUrl = URL.createObjectURL(blob);
-                        // const audio = new Audio(audioUrl);
-                        // audio.play();
-                        div.innerHTML = `
-                        <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
-                        </p>
-                        <div style="line-height: 1.42857143em">
-                           <video id="${msg.timestamp}" controls style="width:100%">                           
-                              <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
-                           </video>
-                        </div>
-                        <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
-                        </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                        </div>
-                    `
+                        videoSourceBuffer.appendBuffer(hex2byte(result.message));
+                    //     const blob = new Blob([hex2byte(result.message)], {
+                    //         type: "video/webm;codecs=vp9"
+                    //     });
+                    //     const audioUrl = URL.createObjectURL(blob);
+                    //     // const audio = new Audio(audioUrl);
+                    //     // audio.play();
+                    //     div.innerHTML = `
+                    //     <p class="meta" style="font-size: .9em">
+                    //     ${smartTruncate(msg.pubkey, 25)}
+                    //     </p>
+                    //     <div style="line-height: 1.42857143em">
+                    //        <video id="${msg.timestamp}" controls style="width:100%">                           
+                    //           <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
+                    //        </video>
+                    //     </div>
+                    //     <p class="meta" style="font-size: .9em">
+                    //     ${moment(msg.timestamp).fromNow()}
+                    //     </p>
+                    //     <div class="comment" id="${msg.hash}">
+                    //         <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                    //     </div>
+                    // `
                     } else if (msg.type === "text") {
                         div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
@@ -824,47 +850,47 @@ const commentAudio = (id) =>
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 const handleAction = async () => {
-    // navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
-    //     recordSegments(stream);
-    //     });
-    //   const segments = [];
-    //   function recordSegments(stream){
-    //     let int = setInterval(()=>{
-    //       if(segments.length >= 50){
-    //         clearInterval(int);
-    //         stream.getTracks().forEach(t=>t.stop());
-    //         return;
-    //         }
-    //       const chunks = [];
-    //       const rec = new MediaRecorder(stream);
-    //       rec.ondataavailable = e => chunks.push(e.data);
-    //       rec.onstop = e => {
-    //           segments.push(new Blob(chunks));
-    //           const audioBlob = new Blob(chunks)
-    //           blob2abuff(audioBlob).then(data => {
-    //             const uint8View = new Uint8Array(data);
-    //             const hex = buf2hex(uint8View)
-    //             const pair = localStorage.getItem('pair')
-    //             const key = JSON.parse(pair)
-    //             post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
-    //                 const msg = JSON.parse(res)
-    //                 const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-    //             })
-    //           })
-    //         }
-    //       rec.start();
-    //       setTimeout(()=>rec.stop(), 1000);
-    //     }, 1000);
-    // }
-    const recorder = await recordAudio();
-    const actionButton = document.getElementById('action');
-    actionButton.disabled = true;
-    recorder.start();
-    await sleep(20000);
-    const audio = await recorder.stop();
-    audio.play();
-    await sleep(5000);
-    actionButton.disabled = false;
+    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
+        recordSegments(stream);
+        });
+      const segments = [];
+      function recordSegments(stream){
+        let int = setInterval(()=>{
+          if(segments.length >= 50){
+            clearInterval(int);
+            stream.getTracks().forEach(t=>t.stop());
+            return;
+            }
+          const chunks = [];
+          const rec = new MediaRecorder(stream);
+          rec.ondataavailable = e => chunks.push(e.data);
+          rec.onstop = e => {
+              segments.push(new Blob(chunks));
+              const audioBlob = new Blob(chunks)
+              blob2abuff(audioBlob).then(data => {
+                const uint8View = new Uint8Array(data);
+                const hex = buf2hex(uint8View)
+                const pair = localStorage.getItem('pair')
+                const key = JSON.parse(pair)
+                post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+                    const msg = JSON.parse(res)
+                    const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+                })
+              })
+            }
+          rec.start();
+          setTimeout(()=>rec.stop(), 1000);
+        }, 1000);
+    }
+    // const recorder = await recordAudio();
+    // const actionButton = document.getElementById('action');
+    // actionButton.disabled = true;
+    // recorder.start();
+    // await sleep(20000);
+    // const audio = await recorder.stop();
+    // audio.play();
+    // await sleep(5000);
+    // actionButton.disabled = false;
 }
 
 const comAudio = async (id) => {
