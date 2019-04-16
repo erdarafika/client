@@ -509,6 +509,7 @@ const sig = function signed() {
                             type: 'video/mp4;codecs="h264"'
                         });
                         const audioUrl = URL.createObjectURL(blob);
+                        console.log(audioUrl)
                         // const audio = new Audio(audioUrl);
                         // audio.play();
                         div.innerHTML = `
