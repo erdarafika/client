@@ -461,9 +461,6 @@ const notsigned = function notsigned() {
     }, false)
 }
 
-const videoSourceBuffer = myMediaSource
-  .addSourceBuffer('video/webm;codecs="vp9"');
-
 const sig = function signed() {
     let user = localStorage.getItem('pair')
     let pubkey = JSON.parse(user)
@@ -490,6 +487,7 @@ const sig = function signed() {
     const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
+    const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm;codecs="vp9"');
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
         let div = document.createElement('div')
@@ -855,7 +853,7 @@ const handleAction = async () => {
       const segments = [];
       function recordSegments(stream){
         let int = setInterval(()=>{
-          if(segments.length >= 50){
+          if(segments.length >= 200){
             clearInterval(int);
             stream.getTracks().forEach(t=>t.stop());
             return;
