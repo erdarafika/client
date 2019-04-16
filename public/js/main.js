@@ -502,7 +502,7 @@ const sig = function signed() {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
                     if (msg.type === "audio") {
-                        videoSourceBuffer.appendBuffer(hex2byte(result.message));
+                        // videoSourceBuffer.appendBuffer(hex2byte(result.message));
                         const blob = new Blob([hex2byte(result.message)], {
                             type: 'video/mp4;codecs="h264"'
                         });
