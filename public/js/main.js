@@ -509,7 +509,7 @@ const sig = function signed() {
                             type: "video/webm;codecs=vp9"
                         });
                         const audioUrl = URL.createObjectURL(blob);
-                        // const audio = new Audio(audioUrl);
+                        const audio = new Audio(audioUrl);
                         // audio.play();
                         div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
