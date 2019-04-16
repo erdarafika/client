@@ -477,9 +477,7 @@ const sig = function signed() {
                 <span class="toggle"><a onclick="handleAction()" id="action"> Voice Post </a></span>
                 <span class="char-left"></span>
             </div>
-            <div class="comment">
-                <video id="my-video" width="100%" height="320px" controls/>
-            </div>
+            
         </div>
         `
     main.appendChild(p)
