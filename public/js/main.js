@@ -507,7 +507,6 @@ const sig = function signed() {
                             type: 'video/webm;codecs=v9'
                         });
                         const audioUrl = URL.createObjectURL(blob);
-                        console.log(audioUrl)
                         // const audio = new Audio(audioUrl);
                         // audio.play();
                         div.innerHTML = `
