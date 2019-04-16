@@ -483,11 +483,11 @@ const sig = function signed() {
         </div>
         `
     main.appendChild(p)
-    const videoTag = document.getElementById("my-video");
-    const myMediaSource = new MediaSource();
-    const url = URL.createObjectURL(myMediaSource);
-    videoTag.src = url;
-    const videoSourceBuffer = myMediaSource.addSourceBuffer('video/mp4;codecs="h264"');
+    // const videoTag = document.getElementById("my-video");
+    // const myMediaSource = new MediaSource();
+    // const url = URL.createObjectURL(myMediaSource);
+    // videoTag.src = url;
+    // const videoSourceBuffer = myMediaSource.addSourceBuffer('video/mp4;codecs="h264"');
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
         let div = document.createElement('div')
