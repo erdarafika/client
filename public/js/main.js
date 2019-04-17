@@ -513,16 +513,14 @@ const sig = function signed() {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
                             queue.push(hex2byte(result.message))
-                            counters.push(1)
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
 
                             if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
-                                console.log(queue)
-                                videoSourceBuffer.appendBuffer(queue.shift());
-                            } else {
                                 
+                            } else {
+                                videoSourceBuffer.appendBuffer(queue.shift());
                             }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
