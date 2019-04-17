@@ -455,6 +455,17 @@ const notsigned = function notsigned() {
     }, false)
 }
 
+function onfilechange(evt) {
+    var selFile = evt.target.files[0];
+    var reader = new FileReader();
+    reader.onloadend = function (e) {
+        console.log(e);
+        console.log(new Int8Array(e.target.result));
+    };
+    reader.readAsArrayBuffer(selFile);
+}
+document.getElementById('file').addEventListener('change', onfilechange);
+
 const sig = function signed() {
     let user = localStorage.getItem('pair')
     let pubkey = JSON.parse(user)
@@ -474,6 +485,7 @@ const sig = function signed() {
             <div style="margin-top: 20px;">
                 <video id="my-video" width="100%" autoplay controls type='video/webm;codecs="opus,vp9"'/>
             </div>
+            <input type="file" id="file">
         </div>
         `
     main.appendChild(p)
