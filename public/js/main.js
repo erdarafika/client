@@ -522,7 +522,7 @@ const sig = function signed() {
                                     videoSourceBuffer.endOfStream();
                                 } else {
                                     console.log(queue)
-                                    if ( queue.length ) {
+                                    if ( queue.length == 1 ) {
                                         console.log(queue.length)
                                         videoSourceBuffer.appendBuffer(queue.shift());
                                     }
