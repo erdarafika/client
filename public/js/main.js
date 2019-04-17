@@ -522,16 +522,9 @@ const sig = function signed() {
 
                             console.log(queue)
                             if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
-                                videoSourceBuffer.endOfStream();
+                                videoSourceBuffer.appendBuffer(queue.shift());
                             } else {
-                                console.log(counters.length)
-                                if (counters.length == 10) {
- 
-                                } else  if (counters.length > 10){
-                                    
-                                } else {
-                                    videoSourceBuffer.appendBuffer(queue.shift());
-                                }
+                                
                             }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
