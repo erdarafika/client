@@ -522,6 +522,7 @@ const sig = function signed() {
                                 if (!videoSourceBuffer.updating && myMediaSource.readyState === 'open') {
                                 
                                 } else {
+                                    console.log(queue.length)
                                     videoSourceBuffer.appendBuffer(queue.shift());
                                 }
                             }
