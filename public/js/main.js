@@ -488,6 +488,12 @@ const sig = function signed() {
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
     myMediaSource.addEventListener('sourceopen', function () {
+    const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
+    videoSourceBuffer.mode = 'sequence';
+    console.log("Source is open and ready to append to sourcebuffer");
+    videoSourceBuffer.addEventListener('updateend', function(ev) {
+                        
+    });
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
         let div = document.createElement('div')
@@ -505,12 +511,7 @@ const sig = function signed() {
                 if (result.message) {
                     if (msg.type === "audio") {
                         
-                            const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
-                            videoSourceBuffer.mode = 'sequence';
-                            console.log("Source is open and ready to append to sourcebuffer");
-                            videoSourceBuffer.addEventListener('updateend', function(ev) {
-                        
-                            });
+                            
                             videoSourceBuffer.appendBuffer(hex2byte(result.message));
                         
                         const blob = new Blob([hex2byte(result.message)], {
