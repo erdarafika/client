@@ -464,7 +464,6 @@ function onfilechange(evt) {
     };
     reader.readAsArrayBuffer(selFile);
 }
-document.getElementById('file').addEventListener('change', onfilechange);
 
 const sig = function signed() {
     let user = localStorage.getItem('pair')
@@ -489,6 +488,7 @@ const sig = function signed() {
         </div>
         `
     main.appendChild(p)
+    document.getElementById('file').addEventListener('change', onfilechange);
     const queue = [];
     const videoTag = document.getElementById("my-video");
     const myMediaSource = new MediaSource();
