@@ -514,7 +514,7 @@ const sig = function signed() {
                             // now just call queue.push(buffer) instead
 
                             videoSourceBuffer.addEventListener('updateend', function() {
-                            console.log(queue.length)
+                            console.log(queue)
                             if ( queue.length ) {
                                 videoSourceBuffer.appendBuffer(hex2byte(result.message));
                                 sourceBuffer.appendBuffer(queue.shift());
