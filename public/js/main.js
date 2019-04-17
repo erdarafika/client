@@ -517,16 +517,17 @@ const sig = function signed() {
                             // console.log(queue.length) 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            
+
+                            console.log(queue)
+                            if ( queue.length ) {
                                 if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
                                     videoSourceBuffer.endOfStream();
                                 } else {
-                                    console.log(queue)
-                                    if ( queue.length == 1 ) {
-                                        console.log(queue.length)
-                                        videoSourceBuffer.appendBuffer(queue.shift());
-                                    }
+                                    videoSourceBuffer.appendBuffer(queue.shift());   
                                 }
+                            } else {
+
+                            }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
                         //         type: 'video/webm; codecs="opus,vp9"'
