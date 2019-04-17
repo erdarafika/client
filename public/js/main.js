@@ -24,12 +24,6 @@ Gun.on('opt', function (ctx) {
     })
 })
 
-const main = document.getElementById('main')
-const queue = []
-var mimeCodec = 'video/webm;codecs=vp9';
-console.log(myMediaSource.isTypeSupported(mimeCodec));
-var myMediaSource = new myMediaSource();
-
 const toHexString = function toHexString(byteArray) {
     return Array.prototype.map.call(byteArray, function(byte) {
         return ('0' + (byte & 0xFF).toString(16)).slice(-2);
