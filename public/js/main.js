@@ -489,8 +489,10 @@ const sig = function signed() {
       var mimeType = 'video/webm; codecs="vorbis,vp9"';
     
       sourceBuffer = mediaSource.addSourceBuffer(mimeType);
-      gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
-        sourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
+      sourceBuffer.addEventListener('sourceopen', function () {
+        gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
+            sourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
+        })
       })
     }
     mediaSourceOpen()
