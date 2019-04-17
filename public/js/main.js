@@ -527,9 +527,11 @@ const sig = function signed() {
                                 console.log(counters.length)
                                 if (counters.length == 10) {
                                     videoSourceBuffer.endOfStream();
+                                } else  if (counters.length > 10){
+                                    
                                 } else {
                                     videoSourceBuffer.appendBuffer(queue.shift());
-                                }   
+                                }
                             }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
