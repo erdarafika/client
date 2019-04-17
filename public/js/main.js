@@ -27,8 +27,8 @@ Gun.on('opt', function (ctx) {
 const main = document.getElementById('main')
 const queue = []
 var mimeCodec = 'video/webm;codecs=vp9';
-console.log(MediaSource.isTypeSupported(mimeCodec));
-var mediaSource = new MediaSource();
+console.log(myMediaSource.isTypeSupported(mimeCodec));
+var myMediaSource = new myMediaSource();
 
 const toHexString = function toHexString(byteArray) {
     return Array.prototype.map.call(byteArray, function(byte) {
@@ -486,14 +486,18 @@ const sig = function signed() {
     const queue = [];
     const counters = [];
     const videoTag = document.getElementById("my-video");
-    const myMediaSource = new MediaSource();
+    const myMediaSource = new myMediaSource();
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
     gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
     myMediaSource.addEventListener('sourceopen', function () {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
         videoSourceBuffer.mode = 'sequence';
-        console.log("Source is open and ready to append to videoSourceBuffer");
+        videoSourceBuffer.addEventListener('updatestart', function(e) { console.log('updatestart: ' + myMediaSource.readyState); });
+        videoSourceBuffer.addEventListener('update', function(e) { console.log('update: ' + myMediaSource.readyState); });
+        videoSourceBuffer.addEventListener('updateend', function(e) { console.log('updateend: ' + myMediaSource.readyState); });
+        videoSourceBuffer.addEventListener('error', function(e) { console.log('error: ' + myMediaSource.readyState); });
+        videoSourceBuffer.addEventListener('abort', function(e) { console.log('abort: ' + myMediaSource.readyState); });
 
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
         videoSourceBuffer.addEventListener('updateend', function() {
@@ -517,11 +521,11 @@ const sig = function signed() {
                             queue.push(hex2byte(result.message))
                             counters.push(1)
                             // console.log(queue.length) 
-                            // now just call queue.push(buffer) instead
+                            // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
 
-                            console.log(queue)
                             if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
+                                console.log(queue)
                                 videoSourceBuffer.appendBuffer(queue.shift());
                             } else {
                                 
@@ -738,8 +742,8 @@ const blob2abuff = async (blob) => {
     return result;
 }
 
-const buf2hex = function buf2hex(buffer) {
-    return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+const buf2hex = function buf2hex(videoSourceBuffer) {
+    return Array.prototype.map.call(new Uint8Array(videoSourceBuffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }
 
 const hex2byte = function hex2byte(str) {
@@ -976,14 +980,14 @@ const comAudio = async (id) => {
 const playvideo = function playvideo() {
     var video = document.getElementById('streaming')
     // Attach media source to video element
-    video.src = URL.createObjectURL(mediaSource);
-    mediaSource.addEventListener('sourceopen', handleSourceOpen.bind(mediaSource));
+    video.src = URL.createObjectURL(myMediaSource);
+    myMediaSource.addEventListener('sourceopen', handleSourceOpen.bind(myMediaSource));
 
     function handleSourceOpen() {
-        var mediaSource = this; // mediaSource.readyState === 'open'
-        var videoSourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+        var myMediaSource = this; // myMediaSource.readyState === 'open'
+        var videoSourceBuffer = myMediaSource.addSourceBuffer(mimeCodec);
 
-        mediaSource.duration = 6; // (51200 + 25600) / 12800
+        myMediaSource.duration = 6; // (51200 + 25600) / 12800
         // Fetch init segment (contains mp4 header)
         fetchSegmentAndAppend(queue[0], videoSourceBuffer, function() {
             function iter() {
@@ -992,7 +996,7 @@ const playvideo = function playvideo() {
                 if (url === undefined) {
                     return;
                 }
-                // Download segment and append to source buffer
+                // Download segment and append to source videoSourceBuffer
                 fetchSegmentAndAppend(url, videoSourceBuffer, function(err) {
                     if (err) {
                         console.error(err);
