@@ -520,8 +520,8 @@ const sig = function signed() {
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
 
-                            console.log(queue)
                             if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
+                                console.log(queue)
                                 videoSourceBuffer.appendBuffer(queue.shift());
                             } else {
                                 
