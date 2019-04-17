@@ -512,13 +512,12 @@ const sig = function signed() {
                             queue.push(hex2byte(result.message))
                             // whatever normally would have called appendBuffer(buffer) can 
                             // now just call queue.push(buffer) instead
-
+                            videoSourceBuffer.appendBuffer(hex2byte(result.message));
                             videoSourceBuffer.addEventListener('updateend', function() {
-                            console.log(queue)
-                            if ( queue.length ) {
-                                videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                                sourceBuffer.appendBuffer(queue.shift());
-                            }
+                                console.log(queue)
+                                if ( queue.length ) {
+                                    sourceBuffer.appendBuffer(queue.shift());
+                                }
                             }, false);
                             const blob = new Blob([hex2byte(result.message)], {
                                 type: 'video/webm; codecs=vp9,opus'
