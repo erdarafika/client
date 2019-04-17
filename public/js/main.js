@@ -510,11 +510,11 @@ const sig = function signed() {
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            if (videoSourceBuffer.updating || myMediaSource.readyState != "open" || queue.length > 0) {
-                                
-                            } else {
+                            if (queue.length > 0) {
                                 console.log(queue.length)
                                 videoSourceBuffer.appendBuffer(queue.shift());
+                            } else {
+                                
                             }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
