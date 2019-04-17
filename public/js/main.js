@@ -487,12 +487,6 @@ const sig = function signed() {
     myMediaSource.addEventListener('sourceopen', function () {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
         videoSourceBuffer.mode = 'sequence';
-        videoSourceBuffer.addEventListener('updatestart', function(e) { console.log('updatestart: ' + myMediaSource.readyState); });
-        videoSourceBuffer.addEventListener('update', function(e) { console.log('update: ' + myMediaSource.readyState); });
-        videoSourceBuffer.addEventListener('updateend', function(e) { console.log('updateend: ' + myMediaSource.readyState); });
-        videoSourceBuffer.addEventListener('error', function(e) { console.log('error: ' + myMediaSource.readyState); });
-        videoSourceBuffer.addEventListener('abort', function(e) { console.log('abort: ' + myMediaSource.readyState); });
-
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
         videoSourceBuffer.addEventListener('updateend', function() {
         gun.get('posts').map().on(function(data) {
