@@ -494,6 +494,7 @@ const sig = function signed() {
         console.log("Source is open and ready to append to sourcebuffer");
         gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
             videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
+            queue.push(hex2byte(JSON.parse(ack).message))
         })
         gun.get('posts').map().on(function(data) {
             let target = document.getElementById('main')
