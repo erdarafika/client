@@ -488,7 +488,7 @@ const sig = function signed() {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
         videoSourceBuffer.mode = 'sequence';
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
-        videoSourceBuffer.addEventListener('update', function() {
+        videoSourceBuffer.addEventListener('updateend', function() {
         gun.get('posts').map().on(function(data) {
             let target = document.getElementById('main')
             let div = document.createElement('div')
@@ -510,12 +510,12 @@ const sig = function signed() {
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            // if (videoSourceBuffer.updating || myMediaSource.readyState != "open" || queue.length > 0) {
-                            //     console.log(queue.length)
-                            //     videoSourceBuffer.appendBuffer(queue.shift());
-                            // } else {
+                            if (videoSourceBuffer.updating || myMediaSource.readyState != "open" || queue.length > 0) {
                                 
-                            // }
+                            } else {
+                                console.log(queue.length)
+                                videoSourceBuffer.appendBuffer(queue.shift());
+                            }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
                         //         type: 'video/webm; codecs="opus,vp9"'
