@@ -519,20 +519,11 @@ const sig = function signed() {
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
 
                             console.log(queue)
-                            if (videoSourceBuffer.updating || queue.length > 0) {
-                                queue.push(hex2byte(result.message))
+                            if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
+                                videoSourceBuffer.endOfStream();
                             } else {
-                                videoSourceBuffer.appendBuffer(hex2byte(result.message));
+                                videoSourceBuffer.appendBuffer(queue.shift());   
                             }
-                            // if ( queue.length ) {
-                            //     if (queue.length > 0 && !videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
-                            //         videoSourceBuffer.endOfStream();
-                            //     } else {
-                            //         videoSourceBuffer.appendBuffer(queue.shift());   
-                            //     }
-                            // } else {
-
-                            // }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
                         //         type: 'video/webm; codecs="opus,vp9"'
