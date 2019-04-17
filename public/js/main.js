@@ -462,18 +462,10 @@ function onfilechange(evt) {
         const hex = buf2hex(new Uint8Array(e.target.result))
         const pair = localStorage.getItem('pair')
         const key = JSON.parse(pair)
-        // post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
-        //     const msg = JSON.parse(res)
-        //     const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-        // })
-        var self = e.target.result,
-        blob = self.files[0],
-        BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
-        
-        BYTES_PER_CHUNK = parseInt(1048576, 10);
-        SIZE = blob.size;
-        NUM_CHUNKS = Math.max(Math.ceil(SIZE / BYTES_PER_CHUNK), 1);
-        console.log(NUM_CHUNKS)
+        post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+            // const msg = JSON.parse(res)
+            // const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+        })
     };
     reader.readAsArrayBuffer(selFile);
 }
