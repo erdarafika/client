@@ -493,6 +493,7 @@ const sig = function signed() {
         sourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
       })
     }
+    mediaSourceOpen()
     // const queue = [];
     // const counters = [];
     // const videoTag = document.getElementById("my-video");
