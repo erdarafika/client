@@ -490,11 +490,10 @@ const sig = function signed() {
     myMediaSource.addEventListener('sourceopen', function () {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
         videoSourceBuffer.mode = 'sequence';
-        // Get video segments and append them to sourceBuffer.
-        LOG("Source is open and ready to append to sourcebuffer");
-    });
-    videoSourceBuffer.addEventListener('updateend', function(ev) {
-        callback();
+        console.log("Source is open and ready to append to sourcebuffer");
+        videoSourceBuffer.addEventListener('updateend', function(ev) {
+            callback();
+        });
     });
     
     gun.get('posts').map().on(function(data) {
