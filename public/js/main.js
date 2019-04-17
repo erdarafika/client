@@ -509,7 +509,7 @@ const sig = function signed() {
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            if (queue.length > 0) {
+                            if (queue.length) {
                                 console.log(queue.length)
                                 videoSourceBuffer.appendBuffer(queue.shift());
                             } else {
