@@ -488,7 +488,7 @@ const sig = function signed() {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
         videoSourceBuffer.mode = 'sequence';
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
-        videoSourceBuffer.addEventListener('updateend', function() {
+        videoSourceBuffer.addEventListener('update', function() {
         gun.get('posts').map().on(function(data) {
             let target = document.getElementById('main')
             let div = document.createElement('div')
