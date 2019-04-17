@@ -488,13 +488,14 @@ const sig = function signed() {
     const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
+    gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
     myMediaSource.addEventListener('sourceopen', function () {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
         videoSourceBuffer.mode = 'sequence';
         console.log("Source is open and ready to append to sourcebuffer");
-        gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
-            videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
-        })
+        
+        videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
+        
         gun.get('posts').map().on(function(data) {
             let target = document.getElementById('main')
             let div = document.createElement('div')
@@ -512,10 +513,10 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            //queue.push(hex2byte(result.message))
-                            console.log(queue.length)
-                            const buffer = hex2byte(result.message);
-                            queue.push = function( buffer ) { if ( !videoSourceBuffer.updating ) { videoSourceBuffer.appendBuffer( buffer ) } else { Array.prototype.push.call( this, buffer ) } }
+                            // queue.push(hex2byte(result.message))
+                            // console.log(queue.length)
+                            // const buffer = hex2byte(result.message);
+                            // queue.push = function( buffer ) { if ( !videoSourceBuffer.updating ) { videoSourceBuffer.appendBuffer( buffer ) } else { Array.prototype.push.call( this, buffer ) } }
                             // whatever normally would have called appendBuffer(buffer) can 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
@@ -567,6 +568,7 @@ const sig = function signed() {
             target.parentNode.insertBefore(div, target.nextSibling);
         });
     });
+    })
 
     document.getElementById('share').addEventListener('click', (event) => {
         event.preventDefault()
