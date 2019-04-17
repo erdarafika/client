@@ -488,70 +488,78 @@ const sig = function signed() {
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
     myMediaSource.addEventListener('sourceopen', function () {
-    const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
-    videoSourceBuffer.mode = 'sequence';
-    console.log("Source is open and ready to append to sourcebuffer");
-    videoSourceBuffer.addEventListener('updateend', function(ev) {
-                        
-    });
-    gun.get('posts').map().on(function(data) {
-        let target = document.getElementById('main')
-        let div = document.createElement('div')
-        div.className = 'item-view-header'
-        const msg = JSON.parse(data)
-        const sig = "SEA" + JSON.stringify({
-            m: {
-                message: msg.message,
-                type: msg.type
-            },
-            s: msg.sig
-        })
-        if (msg.sig !== undefined && msg.pubkey !== undefined) {
-            verify(sig, msg.pubkey).then(result => {
-                if (result.message) {
-                    if (msg.type === "audio") {
-                        videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                        const blob = new Blob([hex2byte(result.message)], {
-                            type: 'video/webm; codecs=vp9,opus'
-                        });
-                        const audioUrl = URL.createObjectURL(blob);
-                        // const audio = new Audio(audioUrl);
-                        // audio.play();
-                        div.innerHTML = `
-                        <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
-                        </p>
-                        <div style="line-height: 1.42857143em">
-                           <video id="${msg.timestamp}" controls style="width:100%">                           
-                              <source id="source" src="${audioUrl}" type='video/webm; codecs=vp9,opus'/>                        
-                           </video>
-                        </div>
-                        <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
-                        </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                        </div>
-                    `
-                    } else if (msg.type === "text") {
-                        div.innerHTML = `
-                        <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
-                        </p>
-                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
-                        <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
-                        </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                        </div>
-                    `
-                    }
-                }
+        const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
+        videoSourceBuffer.mode = 'sequence';
+        console.log("Source is open and ready to append to sourcebuffer");
+        gun.get('posts').map().on(function(data) {
+            let target = document.getElementById('main')
+            let div = document.createElement('div')
+            div.className = 'item-view-header'
+            const msg = JSON.parse(data)
+            const sig = "SEA" + JSON.stringify({
+                m: {
+                    message: msg.message,
+                    type: msg.type
+                },
+                s: msg.sig
             })
-        }
-        target.parentNode.insertBefore(div, target.nextSibling);
-    });
+            if (msg.sig !== undefined && msg.pubkey !== undefined) {
+                verify(sig, msg.pubkey).then(result => {
+                    if (result.message) {
+                        if (msg.type === "audio") {
+                            // store the buffers until you're ready for them
+                            const queue = [];
+
+                            // whatever normally would have called appendBuffer(buffer) can 
+                            // now just call queue.push(buffer) instead
+
+                            videoSourceBuffer.addEventListener('updateend', function() {
+                            if ( queue.length ) {
+                                videoSourceBuffer.appendBuffer(hex2byte(result.message));
+                                sourceBuffer.appendBuffer(queue.shift());
+                            }
+                            }, false);
+                            const blob = new Blob([hex2byte(result.message)], {
+                                type: 'video/webm; codecs=vp9,opus'
+                            });
+                            const audioUrl = URL.createObjectURL(blob);
+                            // const audio = new Audio(audioUrl);
+                            // audio.play();
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em">
+                            <video id="${msg.timestamp}" controls style="width:100%">                           
+                                <source id="source" src="${audioUrl}" type='video/webm; codecs=vp9,opus'/>                        
+                            </video>
+                            </div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                        `
+                        } else if (msg.type === "text") {
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                        `
+                        }
+                    }
+                })
+            }
+            target.parentNode.insertBefore(div, target.nextSibling);
+        });
     });
 
     document.getElementById('share').addEventListener('click', (event) => {
