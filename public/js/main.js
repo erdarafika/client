@@ -483,128 +483,96 @@ const sig = function signed() {
         </div>
         `
     main.appendChild(p)
-    var mediaSource = new MediaSource();
-    mediaSource.addEventListener('sourceopen', mediaSourceOpen);
-
-    var player = document.getElementById('my-video');
-    player.src = URL.createObjectURL(mediaSource);
-
-    var sourceBuffer;
-
-    function mediaSourceOpen(data) {
-        var mimeType = 'video/webm; codecs="opus,vp9"';
-        sourceBuffer = mediaSource.addSourceBuffer(mimeType);
-        sourceBuffer.appendBuffer(data);
-    }
-
-    var mediaSegments = [];
-
-    function addMediaSegment(bytes) {
-        mediaSegments.push(bytes);
-    }
-
-    function onUpdateEnd() {
-        if (!mediaSegments.length) {
-            return;
-        }
-
-        sourceBuffer.appendBuffer(mediaSegments.shift());
-    }
-
-    sourceBuffer.addEventListener('updateend', onUpdateEnd);
+    const queue = [];
+    const videoTag = document.getElementById("my-video");
+    const myMediaSource = new MediaSource();
+    const url = URL.createObjectURL(myMediaSource);
+    videoTag.src = url;
     gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
-        mediaSourceOpen(hex2byte(JSON.parse(ack).message));
-    })
-    // const queue = [];
-    // const videoTag = document.getElementById("my-video");
-    // const myMediaSource = new MediaSource();
-    // const url = URL.createObjectURL(myMediaSource);
-    // videoTag.src = url;
-    // gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
-    // myMediaSource.addEventListener('sourceopen', function () {
-    //     const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
-    //     videoSourceBuffer.mode = 'sequence';
-    //     console.log("Source is open and ready to append to sourcebuffer");
+    myMediaSource.addEventListener('sourceopen', function () {
+        const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
+        videoSourceBuffer.mode = 'sequence';
+        console.log("Source is open and ready to append to sourcebuffer");
 
-    //     videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
+        videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
         
-    //     gun.get('posts').map().on(function(data) {
-    //         let target = document.getElementById('main')
-    //         let div = document.createElement('div')
-    //         div.className = 'item-view-header'
-    //         const msg = JSON.parse(data)
-    //         const sig = "SEA" + JSON.stringify({
-    //             m: {
-    //                 message: msg.message,
-    //                 type: msg.type
-    //             },
-    //             s: msg.sig
-    //         })
-    //         if (msg.sig !== undefined && msg.pubkey !== undefined) {
-    //             verify(sig, msg.pubkey).then(result => {
-    //                 if (result.message) {
-    //                     if (msg.type === "audio") {
-    //                         // store the buffers until you're ready for them
-    //                         // queue.push(hex2byte(result.message))
-    //                         // console.log(queue.length)
-    //                         // const buffer = hex2byte(result.message);
-    //                         // queue.push = function( buffer ) { if ( !videoSourceBuffer.updating ) { videoSourceBuffer.appendBuffer( buffer ) } else { Array.prototype.push.call( this, buffer ) } }
-    //                         // whatever normally would have called appendBuffer(buffer) can 
-    //                         // now just call queue.push(buffer) instead
-    //                         // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-    //                         videoSourceBuffer.addEventListener('updateend', function() {
-    //                             if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
-    //                                 videoSourceBuffer.endOfStream();
-    //                             } else {
-    //                                 console.log(queue)
-    //                                 if ( queue.length ) {
-    //                                     videoSourceBuffer.appendBuffer(queue.shift());
-    //                                 }
-    //                             }
-    //                         }, false);
-    //                         const blob = new Blob([hex2byte(result.message)], {
-    //                             type: 'video/webm; codecs="opus,vp9"'
-    //                         });
-    //                         const audioUrl = URL.createObjectURL(blob);
-    //                         // const audio = new Audio(audioUrl);
-    //                         // audio.play();
-    //                         div.innerHTML = `
-    //                         <p class="meta" style="font-size: .9em">
-    //                         ${smartTruncate(msg.pubkey, 25)}
-    //                         </p>
-    //                         <div style="line-height: 1.42857143em">
-    //                         <video id="${msg.timestamp}" controls style="width:100%">                           
-    //                             <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
-    //                         </video>
-    //                         </div>
-    //                         <p class="meta" style="font-size: .9em">
-    //                         ${moment(msg.timestamp).fromNow()}
-    //                         </p>
-    //                         <div class="comment" id="${msg.hash}">
-    //                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-    //                         </div>
-    //                     `
-    //                     } else if (msg.type === "text") {
-    //                         div.innerHTML = `
-    //                         <p class="meta" style="font-size: .9em">
-    //                         ${smartTruncate(msg.pubkey, 25)}
-    //                         </p>
-    //                         <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
-    //                         <p class="meta" style="font-size: .9em">
-    //                         ${moment(msg.timestamp).fromNow()}
-    //                         </p>
-    //                         <div class="comment" id="${msg.hash}">
-    //                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-    //                         </div>
-    //                     `
-    //                     }
-    //                 }
-    //             })
-    //         }
-    //         target.parentNode.insertBefore(div, target.nextSibling);
-    //     });
-    // });
-    // })
+        gun.get('posts').map().on(function(data) {
+            let target = document.getElementById('main')
+            let div = document.createElement('div')
+            div.className = 'item-view-header'
+            const msg = JSON.parse(data)
+            const sig = "SEA" + JSON.stringify({
+                m: {
+                    message: msg.message,
+                    type: msg.type
+                },
+                s: msg.sig
+            })
+            if (msg.sig !== undefined && msg.pubkey !== undefined) {
+                verify(sig, msg.pubkey).then(result => {
+                    if (result.message) {
+                        if (msg.type === "audio") {
+                            // store the buffers until you're ready for them
+                            // queue.push(hex2byte(result.message))
+                            // console.log(queue.length)
+                            // const buffer = hex2byte(result.message);
+                            // queue.push = function( buffer ) { if ( !videoSourceBuffer.updating ) { videoSourceBuffer.appendBuffer( buffer ) } else { Array.prototype.push.call( this, buffer ) } }
+                            // whatever normally would have called appendBuffer(buffer) can 
+                            // now just call queue.push(buffer) instead
+                            // videoSourceBuffer.appendBuffer(hex2byte(result.message));
+                            videoSourceBuffer.addEventListener('updateend', function() {
+                                if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
+                                    videoSourceBuffer.endOfStream();
+                                } else {
+                                    console.log(queue)
+                                    if ( queue.length ) {
+                                        videoSourceBuffer.appendBuffer(queue.shift());
+                                    }
+                                }
+                            }, false);
+                            const blob = new Blob([hex2byte(result.message)], {
+                                type: 'video/webm; codecs="opus,vp9"'
+                            });
+                            const audioUrl = URL.createObjectURL(blob);
+                            // const audio = new Audio(audioUrl);
+                            // audio.play();
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em">
+                            <video id="${msg.timestamp}" controls style="width:100%">                           
+                                <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
+                            </video>
+                            </div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                        `
+                        } else if (msg.type === "text") {
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                        `
+                        }
+                    }
+                })
+            }
+            target.parentNode.insertBefore(div, target.nextSibling);
+        });
+    });
+    })
 
     document.getElementById('share').addEventListener('click', (event) => {
         event.preventDefault()
