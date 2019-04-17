@@ -495,6 +495,9 @@ const sig = function signed() {
         console.log("Source is open and ready to append to sourcebuffer");
         
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
+        new Blob([hex2byte(JSON.parse(ack).message)], {
+            type: 'video/webm; codecs=vp9,opus'
+        });
         console.log(hex2byte(JSON.parse(ack).message))
         gun.get('posts').map().on(function(data) {
             let target = document.getElementById('main')
