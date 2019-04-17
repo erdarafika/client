@@ -478,7 +478,7 @@ const sig = function signed() {
                 <span class="char-left"></span>
             </div>
             <div>
-                <video id="my-video" width="100%" height="320px" controls/>
+                <video id="my-video" width="100%" height="320px" autoplay controls/>
             </div>
         </div>
         `
@@ -510,10 +510,7 @@ const sig = function signed() {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
                     if (msg.type === "audio") {
-                        
-                            
-                            videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                        
+                        videoSourceBuffer.appendBuffer(hex2byte(result.message));
                         const blob = new Blob([hex2byte(result.message)], {
                             type: 'video/webm; codecs=vp9,opus'
                         });
