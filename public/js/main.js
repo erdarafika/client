@@ -466,7 +466,7 @@ function onfilechange(evt) {
         //     const msg = JSON.parse(res)
         //     const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
         // })
-        var self = e.currentTarget,
+        var self = e.target.result,
         blob = self.files[0],
         BYTES_PER_CHUNK, SIZE, NUM_CHUNKS, start, end;
         
