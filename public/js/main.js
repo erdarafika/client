@@ -7,6 +7,7 @@ const opt = {
     localStorage: true,
     radisk: false
 };
+opt.store = RindexedDB(opt);
 const gun = Gun(opt);
 const SEA = Gun.SEA
 const now = moment();
