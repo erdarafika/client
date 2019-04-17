@@ -495,7 +495,7 @@ const sig = function signed() {
         console.log("Source is open and ready to append to sourcebuffer");
 
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
-        
+        videoSourceBuffer.addEventListener('updateend', function() {
         gun.get('posts').map().on(function(data) {
             let target = document.getElementById('main')
             let div = document.createElement('div')
@@ -517,7 +517,7 @@ const sig = function signed() {
                             // console.log(queue.length) 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            videoSourceBuffer.addEventListener('updateend', function() {
+                            
                                 if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
                                     videoSourceBuffer.endOfStream();
                                 } else {
@@ -526,7 +526,7 @@ const sig = function signed() {
                                         videoSourceBuffer.appendBuffer(queue.shift());
                                     }
                                 }
-                            }, false);
+                            
                             const blob = new Blob([hex2byte(result.message)], {
                                 type: 'video/webm; codecs="opus,vp9"'
                             });
@@ -568,6 +568,7 @@ const sig = function signed() {
             }
             target.parentNode.insertBefore(div, target.nextSibling);
         });
+        }, false);
     });
     })
 
