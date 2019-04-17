@@ -514,6 +514,7 @@ const sig = function signed() {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
                             queue.push(hex2byte(result.message))
+                            console.log(queue.length)
                             // whatever normally would have called appendBuffer(buffer) can 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
