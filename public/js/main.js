@@ -483,11 +483,20 @@ const sig = function signed() {
         </div>
         `
     main.appendChild(p)
-    // const videoTag = document.getElementById("my-video");
-    // const myMediaSource = new MediaSource();
-    // const url = URL.createObjectURL(myMediaSource);
-    // videoTag.src = url;
-    // const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
+    const videoTag = document.getElementById("my-video");
+    const myMediaSource = new MediaSource();
+    const url = URL.createObjectURL(myMediaSource);
+    videoTag.src = url;
+    myMediaSource.addEventListener('sourceopen', function () {
+        const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
+        videoSourceBuffer.mode = 'sequence';
+        // Get video segments and append them to sourceBuffer.
+        LOG("Source is open and ready to append to sourcebuffer");
+    });
+    videoSourceBuffer.addEventListener('updateend', function(ev) {
+        callback();
+    });
+    
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
         let div = document.createElement('div')
@@ -504,8 +513,7 @@ const sig = function signed() {
             verify(sig, msg.pubkey).then(result => {
                 if (result.message) {
                     if (msg.type === "audio") {
-                        // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                        // videoSourceBuffer.mode = 'sequence';
+                        videoSourceBuffer.appendBuffer(hex2byte(result.message));
                         const blob = new Blob([hex2byte(result.message)], {
                             type: 'video/webm; codecs=vp9,opus'
                         });
