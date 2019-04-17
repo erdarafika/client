@@ -513,21 +513,26 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            queue.push(hex2byte(result.message))
+                            // queue.push(hex2byte(result.message))
                             // console.log(queue.length) 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
 
                             console.log(queue)
-                            if ( queue.length ) {
-                                if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
-                                    videoSourceBuffer.endOfStream();
-                                } else {
-                                    videoSourceBuffer.appendBuffer(queue.shift());   
-                                }
+                            if (videoSourceBuffer.updating || queue.length > 0) {
+                                queue.push(hex2byte(result.message))
                             } else {
-
+                                videoSourceBuffer.appendBuffer(hex2byte(result.message));
                             }
+                            // if ( queue.length ) {
+                            //     if (queue.length > 0 && !videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
+                            //         videoSourceBuffer.endOfStream();
+                            //     } else {
+                            //         videoSourceBuffer.appendBuffer(queue.shift());   
+                            //     }
+                            // } else {
+
+                            // }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
                         //         type: 'video/webm; codecs="opus,vp9"'
