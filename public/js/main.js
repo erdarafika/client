@@ -487,6 +487,7 @@ const sig = function signed() {
     const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
+    videoTag.ply()
     const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
     gun.get('posts').map().on(function(data) {
         let target = document.getElementById('main')
