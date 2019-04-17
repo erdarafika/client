@@ -478,7 +478,7 @@ const sig = function signed() {
                 <span class="char-left"></span>
             </div>
             <div>
-                <video id="my-video" width="100%" height="320px" autoplay controls/>
+                <video id="my-video" width="100%" height="320px" autoplay controls type='video/webm; codecs="opus,vp9"'/>
             </div>
         </div>
         `
