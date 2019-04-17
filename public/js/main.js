@@ -483,6 +483,7 @@ const sig = function signed() {
         </div>
         `
     main.appendChild(p)
+    const queue = [];
     const videoTag = document.getElementById("my-video");
     const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
@@ -508,8 +509,7 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            const queue = [hex2byte(result.message)];
-
+                            queue.push(hex2byte(result.message))
                             // whatever normally would have called appendBuffer(buffer) can 
                             // now just call queue.push(buffer) instead
 
