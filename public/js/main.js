@@ -506,16 +506,16 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            queue.push(hex2byte(result.message))
+                            // queue.push(hex2byte(result.message))
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            if (queue.length > 0) {
-                                console.log(queue.length)
-                                videoSourceBuffer.appendBuffer(queue.shift());
-                            } else {
+                            // if (queue.length > 0) {
+                            //     console.log(queue.length)
+                            //     videoSourceBuffer.appendBuffer(queue.shift());
+                            // } else {
                                 
-                            }
+                            // }
                             
                             const blob = new Blob([hex2byte(result.message)], {
                                 type: 'video/webm; codecs="opus,vp9"'
