@@ -478,7 +478,6 @@ const sig = function signed() {
         `
     main.appendChild(p)
     const queue = [];
-    const counters = [];
     const videoTag = document.getElementById("my-video");
     const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
@@ -506,39 +505,39 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            // queue.push(hex2byte(result.message))
+                            queue.push(hex2byte(result.message))
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            // if (queue.length > 0) {
-                            //     console.log(queue.length)
-                            //     videoSourceBuffer.appendBuffer(queue.shift());
-                            // } else {
+                            if (queue.length > 0) {
+                                console.log(queue.length)
+                                videoSourceBuffer.appendBuffer(queue.shift());
+                            } else {
                                 
-                            // }
+                            }
                             
-                            const blob = new Blob([hex2byte(result.message)], {
-                                type: 'video/webm; codecs="opus,vp9"'
-                            });
-                            const audioUrl = URL.createObjectURL(blob);
-                            // const audio = new Audio(audioUrl);
-                            // audio.play();
-                            div.innerHTML = `
-                            <p class="meta" style="font-size: .9em">
-                            ${smartTruncate(msg.pubkey, 25)}
-                            </p>
-                            <div style="line-height: 1.42857143em">
-                            <video id="${msg.timestamp}" controls style="width:100%">                           
-                                <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
-                            </video>
-                            </div>
-                            <p class="meta" style="font-size: .9em">
-                            ${moment(msg.timestamp).fromNow()}
-                            </p>
-                            <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                            </div>
-                        `
+                        //     const blob = new Blob([hex2byte(result.message)], {
+                        //         type: 'video/webm; codecs="opus,vp9"'
+                        //     });
+                        //     const audioUrl = URL.createObjectURL(blob);
+                        //     // const audio = new Audio(audioUrl);
+                        //     // audio.play();
+                        //     div.innerHTML = `
+                        //     <p class="meta" style="font-size: .9em">
+                        //     ${smartTruncate(msg.pubkey, 25)}
+                        //     </p>
+                        //     <div style="line-height: 1.42857143em">
+                        //     <video id="${msg.timestamp}" controls style="width:100%">                           
+                        //         <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
+                        //     </video>
+                        //     </div>
+                        //     <p class="meta" style="font-size: .9em">
+                        //     ${moment(msg.timestamp).fromNow()}
+                        //     </p>
+                        //     <div class="comment" id="${msg.hash}">
+                        //         <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                        //     </div>
+                        // `
                         } else if (msg.type === "text") {
                             div.innerHTML = `
                             <p class="meta" style="font-size: .9em">
