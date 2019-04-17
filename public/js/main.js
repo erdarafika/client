@@ -512,11 +512,9 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            queue.push(hex2byte(result.message))
+                            // queue.push(hex2byte(result.message))
                             console.log(queue.length)
-                            if ( queue.length ) {
-                                videoSourceBuffer.appendBuffer(queue.shift());
-                            }
+                            queue.push = function( hex2byte(result.message) ) { if ( !videoSourceBuffer.updating ) { videoSourceBuffer.appendBuffer( hex2byte(result.message) ) } else { Array.prototype.push.call( this, hex2byte(result.message) ) } }
                             // whatever normally would have called appendBuffer(buffer) can 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
