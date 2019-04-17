@@ -459,7 +459,14 @@ function onfilechange(evt) {
     var selFile = evt.target.files[0];
     var reader = new FileReader();
     reader.onloadend = function (e) {
-        console.log(new Int8Array(e.target.result));
+        console.log(new Uint8Array(e.target.result));
+        const hex = buf2hex(new Uint8Array(e.target.result))
+                const pair = localStorage.getItem('pair')
+                const key = JSON.parse(pair)
+                post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+                    const msg = JSON.parse(res)
+                    const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+        })
     };
     reader.readAsArrayBuffer(selFile);
 }
@@ -516,39 +523,39 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            queue.push(hex2byte(result.message))
+                            // queue.push(hex2byte(result.message))
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            if (queue.length) {
-                                console.log(queue)
-                                videoSourceBuffer.appendBuffer(queue.shift());
-                            } else {
+                            // if (queue.length) {
+                            //     console.log(queue)
+                            //     videoSourceBuffer.appendBuffer(queue.shift());
+                            // } else {
                                 
-                            }
+                            // }
                             
-                        //     const blob = new Blob([hex2byte(result.message)], {
-                        //         type: 'video/webm; codecs="opus,vp9"'
-                        //     });
-                        //     const audioUrl = URL.createObjectURL(blob);
-                        //     // const audio = new Audio(audioUrl);
-                        //     // audio.play();
-                        //     div.innerHTML = `
-                        //     <p class="meta" style="font-size: .9em">
-                        //     ${smartTruncate(msg.pubkey, 25)}
-                        //     </p>
-                        //     <div style="line-height: 1.42857143em">
-                        //     <video id="${msg.timestamp}" controls style="width:100%">                           
-                        //         <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
-                        //     </video>
-                        //     </div>
-                        //     <p class="meta" style="font-size: .9em">
-                        //     ${moment(msg.timestamp).fromNow()}
-                        //     </p>
-                        //     <div class="comment" id="${msg.hash}">
-                        //         <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                        //     </div>
-                        // `
+                            const blob = new Blob([hex2byte(result.message)], {
+                                type: 'video/webm; codecs="opus,vp9"'
+                            });
+                            const audioUrl = URL.createObjectURL(blob);
+                            // const audio = new Audio(audioUrl);
+                            // audio.play();
+                            div.innerHTML = `
+                            <p class="meta" style="font-size: .9em">
+                            ${smartTruncate(msg.pubkey, 25)}
+                            </p>
+                            <div style="line-height: 1.42857143em">
+                            <video id="${msg.timestamp}" controls style="width:100%">                           
+                                <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
+                            </video>
+                            </div>
+                            <p class="meta" style="font-size: .9em">
+                            ${moment(msg.timestamp).fromNow()}
+                            </p>
+                            <div class="comment" id="${msg.hash}">
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                            </div>
+                        `
                         } else if (msg.type === "text") {
                             div.innerHTML = `
                             <p class="meta" style="font-size: .9em">
