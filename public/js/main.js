@@ -480,7 +480,7 @@ const sig = function signed() {
     const queue = [];
     const counters = [];
     const videoTag = document.getElementById("my-video");
-    const myMediaSource = new myMediaSource();
+    const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
     videoTag.src = url;
     gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
