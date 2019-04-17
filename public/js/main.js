@@ -509,7 +509,7 @@ const sig = function signed() {
                             videoSourceBuffer.mode = 'sequence';
                             console.log("Source is open and ready to append to sourcebuffer");
                             videoSourceBuffer.addEventListener('updateend', function(ev) {
-                                callback();
+                        
                             });
                             videoSourceBuffer.appendBuffer(hex2byte(result.message));
                         
