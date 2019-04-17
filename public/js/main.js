@@ -516,11 +516,14 @@ const sig = function signed() {
                             // console.log(queue.length) 
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-
-                            if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
+                            if (videoSourceBuffer.updating || myMediaSource.readyState != "open" || queue.length > 0) {
                                 
                             } else {
-                                videoSourceBuffer.appendBuffer(queue.shift());
+                                if (!videoSourceBuffer.updating && myMediaSource.readyState === 'open') {
+                                
+                                } else {
+                                    videoSourceBuffer.appendBuffer(queue.shift());
+                                }
                             }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
