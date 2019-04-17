@@ -484,6 +484,7 @@ const sig = function signed() {
         `
     main.appendChild(p)
     const queue = [];
+    const counters = [];
     const videoTag = document.getElementById("my-video");
     const myMediaSource = new MediaSource();
     const url = URL.createObjectURL(myMediaSource);
@@ -514,6 +515,7 @@ const sig = function signed() {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
                             queue.push(hex2byte(result.message))
+                            counters.push(1)
                             // console.log(queue.length) 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
@@ -522,7 +524,12 @@ const sig = function signed() {
                             if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
                                 videoSourceBuffer.endOfStream();
                             } else {
-                                videoSourceBuffer.appendBuffer(queue.shift());   
+                                console.log(counters.length)
+                                if (counters.length == 10) {
+                                    videoSourceBuffer.endOfStream();
+                                } else {
+                                    videoSourceBuffer.appendBuffer(queue.shift());
+                                }   
                             }
                             
                         //     const blob = new Blob([hex2byte(result.message)], {
