@@ -490,15 +490,12 @@ const sig = function signed() {
     videoTag.src = url;
     gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
     myMediaSource.addEventListener('sourceopen', function () {
-        const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
-        // videoSourceBuffer.mode = 'sequence';
+        const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="vorbis,vp9"');
+        videoSourceBuffer.mode = 'sequence';
         console.log("Source is open and ready to append to sourcebuffer");
-        const file = new Blob([hex2byte(JSON.parse(ack).message)], {
-            type: 'video/webm; codecs=vp9,opus'
-        });
+
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
         
-        console.log(hex2byte(JSON.parse(ack).message))
         gun.get('posts').map().on(function(data) {
             let target = document.getElementById('main')
             let div = document.createElement('div')
@@ -534,7 +531,7 @@ const sig = function signed() {
                                 }
                             }, false);
                             const blob = new Blob([hex2byte(result.message)], {
-                                type: 'video/webm; codecs=vp9,opus'
+                                type: 'video/webm; codecs="vorbis,vp9"'
                             });
                             const audioUrl = URL.createObjectURL(blob);
                             // const audio = new Audio(audioUrl);
@@ -545,7 +542,7 @@ const sig = function signed() {
                             </p>
                             <div style="line-height: 1.42857143em">
                             <video id="${msg.timestamp}" controls style="width:100%">                           
-                                <source id="source" src="${audioUrl}" type='video/webm; codecs=vp9,opus'/>                        
+                                <source id="source" src="${audioUrl}" type='video/webm; codecs="vorbis,vp9"'/>                        
                             </video>
                             </div>
                             <p class="meta" style="font-size: .9em">
