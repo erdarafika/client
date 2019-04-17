@@ -491,7 +491,7 @@ const sig = function signed() {
     gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
     myMediaSource.addEventListener('sourceopen', function () {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs=vp9,opus');
-        videoSourceBuffer.mode = 'sequence';
+        // videoSourceBuffer.mode = 'sequence';
         console.log("Source is open and ready to append to sourcebuffer");
         
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
@@ -525,7 +525,7 @@ const sig = function signed() {
                                 if ( queue.length ) {
                                     videoSourceBuffer.appendBuffer(queue.shift());
                                 }
-                            }, true);
+                            }, false);
                             const blob = new Blob([hex2byte(result.message)], {
                                 type: 'video/webm; codecs=vp9,opus'
                             });
