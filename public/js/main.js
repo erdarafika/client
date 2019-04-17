@@ -523,6 +523,7 @@ const sig = function signed() {
                                 } else {
                                     console.log(queue)
                                     if ( queue.length ) {
+                                        console.log(queue.length)
                                         videoSourceBuffer.appendBuffer(queue.shift());
                                     }
                                 }
