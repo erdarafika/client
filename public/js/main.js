@@ -508,7 +508,7 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            const queue = [];
+                            const queue = [hex2byte(result.message)];
 
                             // whatever normally would have called appendBuffer(buffer) can 
                             // now just call queue.push(buffer) instead
