@@ -459,7 +459,6 @@ function onfilechange(evt) {
     var selFile = evt.target.files[0];
     var reader = new FileReader();
     reader.onloadend = function (e) {
-        console.log(e);
         console.log(new Int8Array(e.target.result));
     };
     reader.readAsArrayBuffer(selFile);
@@ -522,7 +521,7 @@ const sig = function signed() {
                             // now just call queue.push(videoSourceBuffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
                             if (queue.length) {
-                                console.log(queue.length)
+                                console.log(queue)
                                 videoSourceBuffer.appendBuffer(queue.shift());
                             } else {
                                 
