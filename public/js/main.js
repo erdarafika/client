@@ -492,7 +492,7 @@ const sig = function signed() {
     myMediaSource.addEventListener('sourceopen', function () {
         const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
         videoSourceBuffer.mode = 'sequence';
-        console.log("Source is open and ready to append to sourcebuffer");
+        console.log("Source is open and ready to append to videoSourceBuffer");
 
         videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
         videoSourceBuffer.addEventListener('updateend', function() {
@@ -513,10 +513,12 @@ const sig = function signed() {
                     if (result.message) {
                         if (msg.type === "audio") {
                             // store the buffers until you're ready for them
-                            queue.push(hex2byte(result.message))
+                            // queue.push(hex2byte(result.message))
                             // console.log(queue.length) 
                             // now just call queue.push(buffer) instead
                             // videoSourceBuffer.appendBuffer(hex2byte(result.message));
+                            var buffer = hex2byte(result.message) 
+                            queue.push = function( buffer ) { if ( !videoSourceBuffer.updating ) { videoSourceBuffer.appendBuffer( buffer ) } else { Array.prototype.push.call( this, buffer ) } }
                             
                                 if (!videoSourceBuffer.updating && videoSourceBuffer.readyState === 'open') {
                                     videoSourceBuffer.endOfStream();
@@ -981,11 +983,11 @@ const playvideo = function playvideo() {
 
     function handleSourceOpen() {
         var mediaSource = this; // mediaSource.readyState === 'open'
-        var sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
+        var videoSourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
 
         mediaSource.duration = 6; // (51200 + 25600) / 12800
         // Fetch init segment (contains mp4 header)
-        fetchSegmentAndAppend(queue[0], sourceBuffer, function() {
+        fetchSegmentAndAppend(queue[0], videoSourceBuffer, function() {
             function iter() {
                 // Pop segment from queue
                 var url = queue.shift();
@@ -993,7 +995,7 @@ const playvideo = function playvideo() {
                     return;
                 }
                 // Download segment and append to source buffer
-                fetchSegmentAndAppend(url, sourceBuffer, function(err) {
+                fetchSegmentAndAppend(url, videoSourceBuffer, function(err) {
                     if (err) {
                         console.error(err);
                     } else {
@@ -1006,15 +1008,15 @@ const playvideo = function playvideo() {
         });
     }
 
-    function fetchSegmentAndAppend(segmentUrl, sourceBuffer, callback) {
+    function fetchSegmentAndAppend(segmentUrl, videoSourceBuffer, callback) {
         fetchArrayBuffer(segmentUrl, function(buf) {
-            sourceBuffer.addEventListener('updateend', function(ev) {
+            videoSourceBuffer.addEventListener('updateend', function(ev) {
                 callback();
             });
-            sourceBuffer.addEventListener('error', function(ev) {
+            videoSourceBuffer.addEventListener('error', function(ev) {
                 callback(ev);
             });
-            sourceBuffer.appendBuffer(buf);
+            videoSourceBuffer.appendBuffer(buf);
         });
     }
 
