@@ -492,7 +492,7 @@ const sig = function signed() {
     var sourceBuffer;
 
     function mediaSourceOpen(data) {
-        var mimeType = 'video/webm; codecs="vorbis,vp9"';
+        var mimeType = 'video/webm; codecs="opus,vp9"';
         sourceBuffer = mediaSource.addSourceBuffer(mimeType);
         sourceBuffer.appendBuffer(data);
     }
@@ -522,7 +522,7 @@ const sig = function signed() {
     // videoTag.src = url;
     // gun.get('posts').get('public.1555440950556~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
     // myMediaSource.addEventListener('sourceopen', function () {
-    //     const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="vorbis,vp9"');
+    //     const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
     //     videoSourceBuffer.mode = 'sequence';
     //     console.log("Source is open and ready to append to sourcebuffer");
 
@@ -563,7 +563,7 @@ const sig = function signed() {
     //                             }
     //                         }, false);
     //                         const blob = new Blob([hex2byte(result.message)], {
-    //                             type: 'video/webm; codecs="vorbis,vp9"'
+    //                             type: 'video/webm; codecs="opus,vp9"'
     //                         });
     //                         const audioUrl = URL.createObjectURL(blob);
     //                         // const audio = new Audio(audioUrl);
@@ -574,7 +574,7 @@ const sig = function signed() {
     //                         </p>
     //                         <div style="line-height: 1.42857143em">
     //                         <video id="${msg.timestamp}" controls style="width:100%">                           
-    //                             <source id="source" src="${audioUrl}" type='video/webm; codecs="vorbis,vp9"'/>                        
+    //                             <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
     //                         </video>
     //                         </div>
     //                         <p class="meta" style="font-size: .9em">
