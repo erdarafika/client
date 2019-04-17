@@ -487,13 +487,12 @@ const sig = function signed() {
     mediaSource.addEventListener('sourceopen', mediaSourceOpen);
 
     var player = document.getElementById('my-video');
-    player.src = window.URL.createObjectURL(mediaSource);
+    player.src = URL.createObjectURL(mediaSource);
 
     var sourceBuffer;
 
     function mediaSourceOpen(data) {
         var mimeType = 'video/webm; codecs="vorbis,vp9"';
-
         sourceBuffer = mediaSource.addSourceBuffer(mimeType);
         sourceBuffer.appendBuffer(data);
     }
