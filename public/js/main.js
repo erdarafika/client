@@ -526,7 +526,7 @@ const sig = function signed() {
                             } else {
                                 console.log(counters.length)
                                 if (counters.length == 10) {
-                                    videoSourceBuffer.endOfStream();
+ 
                                 } else  if (counters.length > 10){
                                     
                                 } else {
