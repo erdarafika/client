@@ -516,7 +516,7 @@ const sig = function signed() {
                             videoSourceBuffer.addEventListener('updateend', function() {
                                 console.log(queue)
                                 if ( queue.length ) {
-                                    sourceBuffer.appendBuffer(queue.shift());
+                                    videoSourceBuffer.appendBuffer(queue.shift());
                                 }
                             }, false);
                             const blob = new Blob([hex2byte(result.message)], {
