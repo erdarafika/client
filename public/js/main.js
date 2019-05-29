@@ -1,34 +1,16 @@
 /*** 
     Holla universe!
 ***/
-const peers = ['https://peer.nevalab.space/gun'];
-const opt = {
-    peers: peers,
-    localStorage: true,
-    radisk: false
-};
-opt.store = RindexedDB(opt);
-const gun = Gun(opt);
+
+const gun = Gun(['https://peer.nevalab.space/gun'])
 const SEA = Gun.SEA
 const now = moment();
-
-Gun.on('opt', function (ctx) {
-    if (ctx.once) {
-      return
-    }
-    ctx.on('out', function (msg) {
-      var to = this.to
-      msg.headers = {
-        token: 'thisIsTheTokenForReals'
-      }
-      to.next(msg)
-    })
-})
+const main = document.getElementById('main') 
 
 const toHexString = function toHexString(byteArray) {
-    return Array.prototype.map.call(byteArray, function(byte) {
-        return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-    }).join('');
+  return Array.prototype.map.call(byteArray, function(byte) {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+  }).join('');
 }
 
 const smartTruncate = function smartTruncate(string, length) {
@@ -94,17 +76,10 @@ const comment = function comment(id) {
         const key = JSON.parse(pair)
         if (message) {
             post(id, 'replies', {
-                message: msg,
-                type: "text"
+                message: msg, type: "text"
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                const sig = "SEA" + JSON.stringify({
-                    m: {
-                        message: msg.message,
-                        type: "text"
-                    },
-                    s: msg.sig
-                })
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
                 verify(sig, key.pub).then(result => {
 
                 })
@@ -137,32 +112,22 @@ const showreply = function showreply(id) {
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
             if (msg.type === "audio") {
-                const sig = "SEA" + JSON.stringify({
-                    m: {
-                        message: msg.message,
-                        type: msg.type
-                    },
-                    s: msg.sig
-                })
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
                 if (sig !== undefined && msg.pubkey !== undefined) {
                     verify(sig, msg.pubkey).then(result => {
                         if (result.message) {
-                            const blob = new Blob([hex2byte(result.message)], {
-                                type: "video/webm;codecs=vp9"
-                            });
+                            const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
                             const audioUrl = URL.createObjectURL(blob);
                             const audio = new Audio(audioUrl);
-                            // queue.push(audioUrl)
-                            // console.log(queue)
                             // audio.play();
                             div.innerHTML = `
                             <p class="meta" style="font-size: .9em">
                             ${smartTruncate(msg.pubkey, 25)}
                             </p>
                             <div style="line-height: 1.42857143em;">
-                                <video id="${msg.timestamp}" controls style="width:100%">                           
-                                    <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
-                                </video>
+                                <audio id="${msg.timestamp}" controls>                           
+                                    <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                                </audio>
                             </div>
                             <p class="meta" style="font-size: .9em">
                             ${moment(msg.timestamp).fromNow()}
@@ -174,14 +139,8 @@ const showreply = function showreply(id) {
                         }
                     })
                 }
-            } else if (msg.type === "text") {
-                const sig = "SEA" + JSON.stringify({
-                    m: {
-                        message: msg.message,
-                        type: msg.type
-                    },
-                    s: msg.sig
-                })
+            } else if( msg.type === "text") {
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
                 if (sig !== undefined && msg.pubkey !== undefined) {
                     verify(sig, msg.pubkey).then(result => {
                         if (result.message) {
@@ -202,22 +161,22 @@ const showreply = function showreply(id) {
                 }
             }
             target.appendChild(div)
-            document.getElementById('show.' + id).setAttribute('onclick', "hide('" + id + "')")
-            document.getElementById('show.' + id).innerHTML = "[-]"
+            document.getElementById('show.'+id).setAttribute('onclick', "hide('"+id+"')")
+            document.getElementById('show.'+id).innerHTML="[-]"
         });
     }
 }
 
-const hide = function hide(id) {
-    document.getElementById("c." + id).remove()
-    document.getElementById('show.' + id).setAttribute('onclick', "showreply('" + id + "')")
-    document.getElementById('show.' + id).innerHTML = "[+]"
+const hide = function hide(id){
+    document.getElementById("c."+id).remove()
+    document.getElementById('show.'+id).setAttribute('onclick', "showreply('"+id+"')")
+    document.getElementById('show.'+id).innerHTML="[+]"
 }
 
-const hideanon = function hideanon(id) {
-    document.getElementById("c." + id).remove()
-    document.getElementById('show.' + id).setAttribute('onclick', "showreplyanon('" + id + "')")
-    document.getElementById('show.' + id).innerHTML = "[+]"
+const hideanon = function hideanon(id){
+    document.getElementById("c."+id).remove()
+    document.getElementById('show.'+id).setAttribute('onclick', "showreplyanon('"+id+"')")
+    document.getElementById('show.'+id).innerHTML="[+]"
 }
 
 const showreplyanon = function showreplyanon(id) {
@@ -233,28 +192,20 @@ const showreplyanon = function showreplyanon(id) {
             div.className = 'item-view-header'
             const msg = JSON.parse(data)
             if (msg.type === "audio") {
-                const sig = "SEA" + JSON.stringify({
-                    m: {
-                        message: msg.message,
-                        type: msg.type
-                    },
-                    s: msg.sig
-                })
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
                 if (sig !== undefined && msg.pubkey !== undefined) {
                     verify(sig, msg.pubkey).then(result => {
                         if (result.message) {
-                            const blob = new Blob([hex2byte(result.message)], {
-                                type: "video/webm;codecs=vp9"
-                            });
+                            const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
                             const audioUrl = URL.createObjectURL(blob);
                             div.innerHTML = `
                             <p class="meta" style="font-size: .9em">
                             ${smartTruncate(msg.pubkey, 25)}
                             </p>
                             <div style="line-height: 1.42857143em;">
-                                <video id="${msg.timestamp}" controls style="width:100%">                           
-                                    <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
-                                </video>
+                                <audio id="${msg.timestamp}" controls>                           
+                                    <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                                </audio>
                             </div>
                             <p class="meta" style="font-size: .9em">
                             ${moment(msg.timestamp).fromNow()}
@@ -266,14 +217,8 @@ const showreplyanon = function showreplyanon(id) {
                         }
                     })
                 }
-            } else if (msg.type === "text") {
-                const sig = "SEA" + JSON.stringify({
-                    m: {
-                        message: msg.message,
-                        type: msg.type
-                    },
-                    s: msg.sig
-                })
+            } else if( msg.type === "text") {
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
                 if (sig !== undefined && msg.pubkey !== undefined) {
                     verify(sig, msg.pubkey).then(result => {
                         if (result.message) {
@@ -294,8 +239,8 @@ const showreplyanon = function showreplyanon(id) {
                 }
             }
             target.appendChild(div)
-            document.getElementById('show.' + id).setAttribute('onclick', "hideanon('" + id + "')")
-            document.getElementById('show.' + id).innerHTML = "[-]"
+            document.getElementById('show.'+id).setAttribute('onclick', "hideanon('"+id+"')")
+            document.getElementById('show.'+id).innerHTML="[-]"
         });
     }
 }
@@ -327,31 +272,21 @@ const notsigned = function notsigned() {
         let div = document.createElement('div')
         div.className = 'item-view-header'
         const msg = JSON.parse(data)
-        const sig = "SEA" + JSON.stringify({
-            m: {
-                message: msg.message,
-                type: msg.type
-            },
-            s: msg.sig
-        })
+        const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
         if (msg.sig !== undefined && msg.pubkey !== undefined) {
             verify(sig, msg.pubkey).then(result => {
+                const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                const audioUrl = URL.createObjectURL(blob);
                 if (result.message) {
-                    if (msg.type === "audio") {
-                        const blob = new Blob([hex2byte(result.message)], {
-                            type: "video/webm;codecs=vp9"
-                        });
-                        const audioUrl = URL.createObjectURL(blob);
-                        // const audio = new Audio(audioUrl);
-                        // audio.play();
-                        div.innerHTML = `
+                   if (msg.type === "audio") {
+                    div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
                         ${smartTruncate(msg.pubkey, 25)}
                         </p>
                         <div style="line-height: 1.42857143em">
-                           <video id="${msg.timestamp}" controls style="width:100%">                           
-                              <source id="source" src="${audioUrl}" type="video/webm;codecs=vp9"/>                        
-                           </video>
+                           <audio id="${msg.timestamp}" controls>                           
+                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                           </audio>
                         </div>
                         <p class="meta" style="font-size: .9em">
                         ${moment(msg.timestamp).fromNow()}
@@ -360,8 +295,8 @@ const notsigned = function notsigned() {
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                         </div>
                     `
-                    } else if (msg.type === "text") {
-                        div.innerHTML = `
+                   } else if (msg.type === "text") {
+                    div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
                         ${smartTruncate(msg.pubkey, 25)}
                         </p>
@@ -373,8 +308,8 @@ const notsigned = function notsigned() {
                             <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
                         </div>
                     `
-                    }
-                }
+                  }
+               }
 
             })
         }
@@ -393,12 +328,8 @@ const notsigned = function notsigned() {
                 } else {
                     try {
                         const sea = JSON.parse(res)
-                        const struct = {
-                            ct: sea.ct,
-                            iv: sea.iv,
-                            s: sea.s
-                        }
-                        const auth = 'SEA{"m":{"ct":"' + sea.ct + '","iv":"' + sea.iv + '","s":"' + sea.s + '"},"s":"' + sea.sig + '"}'
+                        const struct = {ct: sea.ct, iv: sea.iv, s: sea.s}
+                        const auth = 'SEA{"m":{"ct":"'+sea.ct+'","iv":"'+sea.iv+'","s":"'+sea.s+'"},"s":"'+sea.sig+'"}'
                         verify(auth, sea.pub).then(res_sig => {
                             signin(password, pin, res_sig).then(res => {
                                 if (res == undefined) {
@@ -456,21 +387,6 @@ const notsigned = function notsigned() {
     }, false)
 }
 
-function onfilechange(evt) {
-    var selFile = evt.target.files[0];
-    var reader = new FileReader();
-    reader.onloadend = function (e) {
-        const hex = buf2hex(new Uint8Array(e.target.result))
-        const pair = localStorage.getItem('pair')
-        const key = JSON.parse(pair)
-        post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
-            // const msg = JSON.parse(res)
-            // const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-        })
-    };
-    reader.readAsArrayBuffer(selFile);
-}
-
 const sig = function signed() {
     let user = localStorage.getItem('pair')
     let pubkey = JSON.parse(user)
@@ -486,102 +402,59 @@ const sig = function signed() {
                 <span class="toggle"><a id="share">Post</a></span> 
                 <span class="toggle"><a onclick="handleAction()" id="action"> Voice Post </a></span>
                 <span class="char-left"></span>
-            </div>
-            <div style="margin-top: 20px;">
-                <video id="my-video" width="100%" autoplay controls type='video/webm;codecs="opus,vp9"'/>
-            </div>
-            <input type="file" id="file">
+            <adiv>
         </div>
         `
     main.appendChild(p)
-    document.getElementById('file').addEventListener('change', onfilechange);
-    const queue = [];
-    const videoTag = document.getElementById("my-video");
-    const myMediaSource = new MediaSource();
-    const url = URL.createObjectURL(myMediaSource);
-    gun.get('posts').get('public.1555526063656~FVK7l9vQ0i8hSDX4OF-1hWApuEU2koGVNkTwNMDln60.KkClsT80zeVNk5PFrPyXmuhCfLwUzR_gBEEYMvoNDhE').once(function(ack){
-    myMediaSource.addEventListener('sourceopen', function () {
-        const blob = new Blob([hex2byte(JSON.parse(ack).message)], {
-            type: 'video/webm; codecs="opus,vp9"'
-        });
-        const audioUrl = URL.createObjectURL(blob);
-        videoTag.src = audioUrl;
-        const videoSourceBuffer = myMediaSource.addSourceBuffer('video/webm; codecs="opus,vp9"');
-        videoSourceBuffer.mode = 'sequence';
-        videoSourceBuffer.appendBuffer(hex2byte(JSON.parse(ack).message));
-        videoSourceBuffer.addEventListener('updateend', function() {
-        gun.get('posts').map().on(function(data) {
-            let target = document.getElementById('main')
-            let div = document.createElement('div')
-            div.className = 'item-view-header'
-            const msg = JSON.parse(data)
-            const sig = "SEA" + JSON.stringify({
-                m: {
-                    message: msg.message,
-                    type: msg.type
-                },
-                s: msg.sig
+
+    gun.get('posts').map().on(function(data) {
+        let target = document.getElementById('main')
+        let div = document.createElement('div')
+        div.className = 'item-view-header'
+        const msg = JSON.parse(data)
+        const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
+        if (msg.sig !== undefined && msg.pubkey !== undefined) {
+            verify(sig, msg.pubkey).then(result => {
+                const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+                if (result.message) {
+                   if (msg.type === "audio") {
+                    div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
+                        <div style="line-height: 1.42857143em">
+                           <audio id="${msg.timestamp}" controls>                           
+                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
+                           </audio>
+                        </div>
+                        <p class="meta" style="font-size: .9em">
+                        ${moment(msg.timestamp).fromNow()}
+                        </p>
+                        <div class="comment" id="${msg.hash}">
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                        </div>
+                    `
+                   } else if (msg.type === "text") {
+                    div.innerHTML = `
+                        <p class="meta" style="font-size: .9em">
+                        ${smartTruncate(msg.pubkey, 25)}
+                        </p>
+                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
+                        <p class="meta" style="font-size: .9em">
+                        ${moment(msg.timestamp).fromNow()}
+                        </p>
+                        <div class="comment" id="${msg.hash}">
+                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                        </div>
+                    `
+                  }
+                }
             })
-            if (msg.sig !== undefined && msg.pubkey !== undefined) {
-                verify(sig, msg.pubkey).then(result => {
-                    if (result.message) {
-                        if (msg.type === "audio") {
-                            // store the buffers until you're ready for them
-                            // queue.push(hex2byte(result.message))
-                            // console.log(queue.length) 
-                            // now just call queue.push(videoSourceBuffer) instead
-                            // videoSourceBuffer.appendBuffer(hex2byte(result.message));
-                            // if (queue.length) {
-                            //     console.log(queue)
-                            //     videoSourceBuffer.appendBuffer(queue.shift());
-                            // } else {
-                                
-                            // }
-                            
-                            const blob = new Blob([hex2byte(result.message)], {
-                                type: 'video/webm; codecs="opus,vp9"'
-                            });
-                            const audioUrl = URL.createObjectURL(blob);
-                            // const audio = new Audio(audioUrl);
-                            // audio.play();
-                            div.innerHTML = `
-                            <p class="meta" style="font-size: .9em">
-                            ${smartTruncate(msg.pubkey, 25)}
-                            </p>
-                            <div style="line-height: 1.42857143em">
-                            <video id="${msg.timestamp}" controls style="width:100%">                           
-                                <source id="source" src="${audioUrl}" type='video/webm; codecs="opus,vp9"'/>                        
-                            </video>
-                            </div>
-                            <p class="meta" style="font-size: .9em">
-                            ${moment(msg.timestamp).fromNow()}
-                            </p>
-                            <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                            </div>
-                        `
-                        } else if (msg.type === "text") {
-                            div.innerHTML = `
-                            <p class="meta" style="font-size: .9em">
-                            ${smartTruncate(msg.pubkey, 25)}
-                            </p>
-                            <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
-                            <p class="meta" style="font-size: .9em">
-                            ${moment(msg.timestamp).fromNow()}
-                            </p>
-                            <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                            </div>
-                        `
-                        }
-                    }
-                })
-            }
-            target.parentNode.insertBefore(div, target.nextSibling);
-        });
-        }, false);
+        }
+        target.parentNode.insertBefore(div, target.nextSibling);
     });
-    })
 
     document.getElementById('share').addEventListener('click', (event) => {
         event.preventDefault()
@@ -590,17 +463,10 @@ const sig = function signed() {
         const key = JSON.parse(pair)
         if (message) {
             post('posts', 'public', {
-                message: message,
-                type: "text"
+                message: message, type: "text"
             }, key).then(res => {
                 const msg = JSON.parse(res)
-                const sig = "SEA" + JSON.stringify({
-                    m: {
-                        message: msg.message,
-                        type: "text"
-                    },
-                    s: msg.sig
-                })
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
                 verify(sig, key.pub).then(result => {
                     document.getElementById('message').value = ""
                 })
@@ -618,7 +484,7 @@ const sig = function signed() {
     }, false)
 }
 
-const anonymous = async () => {
+const anonymous = async() => {
     try {
         const result = await SEA.pair()
         return result
@@ -627,20 +493,20 @@ const anonymous = async () => {
     }
 }
 
-const register = async (username, password, salt) => {
+const register = async(username, password, salt) => {
     try {
         const pair = await SEA.pair()
         const proof = await SEA.work(password, salt)
         const auth = await SEA.encrypt(pair, proof)
         const signed = await SEA.sign(auth, pair)
-        const enc = JSON.parse(auth.substr(3))
+        const enc = JSON.parse(auth.substr(3)) 
         const sigm = JSON.parse(signed.substr(3))
         const obj = {
             pub: pair.pub,
             epub: pair.epub,
             ct: enc.ct,
             iv: enc.iv,
-            s: enc.s,
+            s: enc.s, 
             sig: sigm.s
         }
         const jstring = JSON.stringify(obj)
@@ -651,7 +517,7 @@ const register = async (username, password, salt) => {
     }
 }
 
-const sea = async (alias) => {
+const sea = async(alias) => {
     try {
         const result = await gun.get(alias).get('sea')
         return result
@@ -660,7 +526,7 @@ const sea = async (alias) => {
     }
 }
 
-const signin = async (password, salt, auth) => {
+const signin = async(password, salt, auth) => {
     try {
         const login = await SEA.work(password, salt)
         const keys = await SEA.decrypt(auth, login)
@@ -670,7 +536,7 @@ const signin = async (password, salt, auth) => {
     }
 }
 
-const sign = async (data, pub) => {
+const sign = async(data, pub) => {
     try {
         const result = await SEA.sign(data, pub)
         return result
@@ -679,7 +545,7 @@ const sign = async (data, pub) => {
     }
 }
 
-const verify = async (data, pub) => {
+const verify = async(data, pub) => {
     try {
         const result = await SEA.verify(data, pub)
         return result
@@ -688,7 +554,7 @@ const verify = async (data, pub) => {
     }
 }
 
-const encrypt = async (data, pub) => {
+const encrypt = async(data, pub) => {
     try {
         const result = await SEA.encrypt(data, pub)
         return result
@@ -697,7 +563,7 @@ const encrypt = async (data, pub) => {
     }
 }
 
-const decrypt = async (data, pub) => {
+const decrypt = async(data, pub) => {
     try {
         const result = await SEA.decrypt(data, pub)
         return result
@@ -708,7 +574,7 @@ const decrypt = async (data, pub) => {
 
 // Elliptic-curve Diffie–Hellman
 
-const secret = async (epub, pair) => {
+const secret = async(epub, pair) => {
     try {
         const result = await SEA.secret(epub, pair);
         return result
@@ -717,15 +583,15 @@ const secret = async (epub, pair) => {
     }
 }
 
-const post = async (node, path, data, pair) => {
+const post = async(node, path, data, pair) => {
     if (pair) {
         try {
             if (pair.pub == undefined || pair.pub == "") {
-
+                
             } else {
                 const signed = await SEA.sign(data, pair)
                 const seasig = JSON.parse(signed.substr(3))
-                const hash = sha256(path + '.' + new Date().getTime() + '~' + pair.pub + seasig.m.message + seasig.s)
+                const hash = sha256(path + '.' + new Date().getTime() + '~' + pair.pub+seasig.m.message+seasig.s)
                 const obj = {
                     hash: hash,
                     pubkey: pair.pub,
@@ -749,295 +615,123 @@ const blob2abuff = async (blob) => {
     return result;
 }
 
-const buf2hex = function buf2hex(videoSourceBuffer) {
-    return Array.prototype.map.call(new Uint8Array(videoSourceBuffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+const buf2hex = function buf2hex(buffer) {
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }
 
 const hex2byte = function hex2byte(str) {
-    if (!str) {
-        return new Uint8Array();
-    }
-
-    var a = [];
-    for (var i = 0, len = str.length; i < len; i += 2) {
-        a.push(parseInt(str.substr(i, 2), 16));
-    }
-
-    return new Uint8Array(a);
+  if (!str) {
+    return new Uint8Array();
+  }
+  
+  var a = [];
+  for (var i = 0, len = str.length; i < len; i+=2) {
+    a.push(parseInt(str.substr(i,2),16));
+  }
+  
+  return new Uint8Array(a);
 }
 
 const recordAudio = () =>
-    new Promise(async resolve => {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        });
-        const mediaRecorder = new MediaRecorder(stream);
-        const audioChunks = [];
+  new Promise(async resolve => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const audioChunks = [];
 
-        mediaRecorder.addEventListener("dataavailable", event => {
-            audioChunks.push(event.data);
-        });
-
-        const start = () => mediaRecorder.start();
-
-        const stop = () =>
-            new Promise(resolve => {
-                mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks);
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrl);
-                    const play = () => audio.play();
-                    blob2abuff(audioBlob).then(data => {
-                        const uint8View = new Uint8Array(data);
-                        const hex = buf2hex(uint8View)
-                        const pair = localStorage.getItem('pair')
-                        const key = JSON.parse(pair)
-                        post('posts', 'public', {
-                            message: hex,
-                            type: "audio"
-                        }, key).then(res => {
-                            const msg = JSON.parse(res)
-                            const sig = "SEA" + JSON.stringify({
-                                m: {
-                                    message: msg.message,
-                                    type: "audio"
-                                },
-                                s: msg.sig
-                            })
-                        })
-                    })
-                    resolve({
-                        audioBlob,
-                        audioUrl,
-                        play
-                    });
-                });
-
-                mediaRecorder.stop();
-            });
-
-        resolve({
-            start,
-            stop
-        });
+    mediaRecorder.addEventListener("dataavailable", event => {
+      audioChunks.push(event.data);
     });
+
+    const start = () => mediaRecorder.start();
+
+    const stop = () =>
+      new Promise(resolve => {
+        mediaRecorder.addEventListener("stop", () => {
+          const audioBlob = new Blob(audioChunks);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          const play = () => audio.play();
+          blob2abuff(audioBlob).then(data => {
+            const uint8View = new Uint8Array(data);
+            const hex = buf2hex(uint8View)
+	        const pair = localStorage.getItem('pair')
+            const key = JSON.parse(pair)
+            post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
+                const msg = JSON.parse(res)
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+            })
+          })
+          resolve({ audioBlob, audioUrl, play });
+        });
+
+        mediaRecorder.stop();
+      });
+
+    resolve({ start, stop });
+});
 
 const commentAudio = (id) =>
-    new Promise(async resolve => {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        });
-        const mediaRecorder = new MediaRecorder(stream);
-        const audioChunks = [];
+  new Promise(async resolve => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const audioChunks = [];
 
-        mediaRecorder.addEventListener("dataavailable", event => {
-            audioChunks.push(event.data);
-        });
-
-        const start = () => mediaRecorder.start();
-
-        const stop = () =>
-            new Promise(resolve => {
-                mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks);
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrl);
-                    const play = () => audio.play();
-                    blob2abuff(audioBlob).then(data => {
-                        const uint8View = new Uint8Array(data);
-                        const hex = buf2hex(uint8View)
-                        const pair = localStorage.getItem('pair')
-                        const key = JSON.parse(pair)
-                        post(id, 'replies', {
-                            message: hex,
-                            type: "audio"
-                        }, key).then(res => {
-                            const msg = JSON.parse(res)
-                            const sig = "SEA" + JSON.stringify({
-                                m: {
-                                    message: msg.message,
-                                    type: "audio"
-                                },
-                                s: msg.sig
-                            })
-                        })
-                    })
-                    resolve({
-                        audioBlob,
-                        audioUrl,
-                        play
-                    });
-                });
-
-                mediaRecorder.stop();
-            });
-
-        resolve({
-            start,
-            stop
-        });
+    mediaRecorder.addEventListener("dataavailable", event => {
+      audioChunks.push(event.data);
     });
+
+    const start = () => mediaRecorder.start();
+
+    const stop = () =>
+      new Promise(resolve => {
+        mediaRecorder.addEventListener("stop", () => {
+          const audioBlob = new Blob(audioChunks);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          const play = () => audio.play();
+          blob2abuff(audioBlob).then(data => {
+            const uint8View = new Uint8Array(data);
+            const hex = buf2hex(uint8View)
+	        const pair = localStorage.getItem('pair')
+            const key = JSON.parse(pair)
+            post(id, 'replies', {message: hex, type: "audio"}, key).then(res => {
+                const msg = JSON.parse(res)
+                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
+            })
+          })
+          resolve({ audioBlob, audioUrl, play });
+        });
+
+        mediaRecorder.stop();
+      });
+
+    resolve({ start, stop });
+});
 
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
 const handleAction = async () => {
-    navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
-        recordSegments(stream);
-        });
-      const segments = [];
-      function recordSegments(stream){
-        let int = setInterval(()=>{
-          if(segments.length >= 200){
-            clearInterval(int);
-            stream.getTracks().forEach(t=>t.stop());
-            return;
-            }
-          const chunks = [];
-          // var options = {mimeType: 'video/webm;codecs=h264'}; 
-          const rec = new MediaRecorder(stream);
-          rec.ondataavailable = e => chunks.push(e.data);
-          rec.onstop = e => {
-              segments.push(new Blob(chunks));
-              const audioBlob = new Blob(chunks)
-              blob2abuff(audioBlob).then(data => {
-                const uint8View = new Uint8Array(data);
-                const hex = buf2hex(uint8View)
-                const pair = localStorage.getItem('pair')
-                const key = JSON.parse(pair)
-                post('posts', 'public', {message: hex, type: "audio"}, key).then(res => {
-                    const msg = JSON.parse(res)
-                    const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "audio"}, s: msg.sig})
-                })
-              })
-            }
-          rec.start();
-          setTimeout(()=>rec.stop(), 1000);
-        }, 1000);
-    }
-    // const recorder = await recordAudio();
-    // const actionButton = document.getElementById('action');
-    // actionButton.disabled = true;
-    // recorder.start();
-    // await sleep(20000);
-    // const audio = await recorder.stop();
-    // audio.play();
-    // await sleep(5000);
-    // actionButton.disabled = false;
+  const recorder = await recordAudio();
+  const actionButton = document.getElementById('action');
+  actionButton.disabled = true;
+  recorder.start();
+  await sleep(9000);
+  const audio = await recorder.stop();
+  audio.play();
+  await sleep(9000);
+  actionButton.disabled = false;
 }
 
 const comAudio = async (id) => {
-    // navigator.mediaDevices.getUserMedia({
-    //     video: true,
-    //     audio: true
-    // }).then(stream => {
-    //     recordSegments(stream);
-    // });
-    // const segments = [];
-
-    // function recordSegments(stream) {
-    //     let int = setInterval(() => {
-    //         if (segments.length >= 10) {
-    //             clearInterval(int);
-    //             stream.getTracks().forEach(t => t.stop());
-    //             return;
-    //         }
-    //         const chunks = [];
-    //         const rec = new MediaRecorder(stream);
-    //         rec.ondataavailable = e => chunks.push(e.data);
-    //         rec.onstop = e => {
-    //             segments.push(new Blob(chunks));
-    //             const audioBlob = new Blob(chunks)
-    //             blob2abuff(audioBlob).then(data => {
-    //                 const uint8View = new Uint8Array(data);
-    //                 const hex = buf2hex(uint8View)
-    //                 const pair = localStorage.getItem('pair')
-    //                 const key = JSON.parse(pair)
-    //                 post(id, 'replies', {
-    //                     message: hex,
-    //                     type: "audio"
-    //                 }, key).then(res => {
-    //                     const msg = JSON.parse(res)
-    //                     const sig = "SEA" + JSON.stringify({
-    //                         m: {
-    //                             message: msg.message,
-    //                             type: "audio"
-    //                         },
-    //                         s: msg.sig
-    //                     })
-    //                 })
-    //             })
-    //         }
-    //         rec.start();
-    //         setTimeout(() => rec.stop(), 1000);
-    //     }, 1000);
-    // }
     const recorder = await commentAudio(id);
     const actionButton = document.getElementById('actAudio');
     actionButton.disabled = true;
     recorder.start();
-    await sleep(20000);
+    await sleep(9000);
     const audio = await recorder.stop();
     audio.play();
-    await sleep(5000);
+    await sleep(9000);
     actionButton.disabled = false;
-}
-
-const playvideo = function playvideo() {
-    var video = document.getElementById('streaming')
-    // Attach media source to video element
-    video.src = URL.createObjectURL(myMediaSource);
-    myMediaSource.addEventListener('sourceopen', handleSourceOpen.bind(myMediaSource));
-
-    function handleSourceOpen() {
-        var myMediaSource = this; // myMediaSource.readyState === 'open'
-        var videoSourceBuffer = myMediaSource.addSourceBuffer(mimeCodec);
-
-        myMediaSource.duration = 6; // (51200 + 25600) / 12800
-        // Fetch init segment (contains mp4 header)
-        fetchSegmentAndAppend(queue[0], videoSourceBuffer, function() {
-            function iter() {
-                // Pop segment from queue
-                var url = queue.shift();
-                if (url === undefined) {
-                    return;
-                }
-                // Download segment and append to source videoSourceBuffer
-                fetchSegmentAndAppend(url, videoSourceBuffer, function(err) {
-                    if (err) {
-                        console.error(err);
-                    } else {
-                        setTimeout(iter, 200);
-                    }
-                });
-            }
-            iter();
-            video.play();
-        });
-    }
-
-    function fetchSegmentAndAppend(segmentUrl, videoSourceBuffer, callback) {
-        fetchArrayBuffer(segmentUrl, function(buf) {
-            videoSourceBuffer.addEventListener('updateend', function(ev) {
-                callback();
-            });
-            videoSourceBuffer.addEventListener('error', function(ev) {
-                callback(ev);
-            });
-            videoSourceBuffer.appendBuffer(buf);
-        });
-    }
-
-    function fetchArrayBuffer(url, callback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('get', url);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function() {
-            callback(xhr.response);
-        };
-        xhr.send();
-    }
 }
 
 class App {
