@@ -2,10 +2,12 @@
     Holla universe!
 ***/
 
-const gun = Gun(['https://peer.nevalab.space/gun'])
+const gun = Gun(['http://localhost:3000/gun'])
 const SEA = Gun.SEA
+const user = gun.user();
 const now = moment();
 const main = document.getElementById('main') 
+const session = gun.user().recall({sessionStorage: true});
 
 const toHexString = function toHexString(byteArray) {
   return Array.prototype.map.call(byteArray, function(byte) {
@@ -68,21 +70,15 @@ const count = function count() {
     };
 }
 
-const comment = function comment(id) {
+const comment = function comment(id, y, m, d) {
     const msg = document.getElementById('msg.' + id).value
     if (msg && msg.length <= 1000) {
         document.getElementById('msg.' + id).value = ""
-        const pair = localStorage.getItem('pair')
-        const key = JSON.parse(pair)
         if (message) {
             post(id, 'replies', {
                 message: msg, type: "text"
-            }, key).then(res => {
-                const msg = JSON.parse(res)
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
-                verify(sig, key.pub).then(result => {
-
-                })
+            }, y, m, d).then(res => {
+                console.log(res);
             })
         }
     } else {
@@ -90,8 +86,12 @@ const comment = function comment(id) {
     }
 }
 
-const showreply = function showreply(id) {
+const showreply = function showreply(id, pubKey) {
     if (!document.getElementById("c." + id)) {
+        var d = new Date();
+        var y = d.getFullYear();
+        var m = d.getMonth();
+        var d = d.getDate();
         let target = document.getElementById(id)
         let div = document.createElement('div')
         div.id = "c." + id
@@ -99,67 +99,29 @@ const showreply = function showreply(id) {
             <div>
                 <textarea id="msg.${id}" class="card w-100" style="height:100px;" placeholder="give your thoughts ..."></textarea>
                 <div class="comment">
-                    <span class="toggle"><a onclick="comment('${id}')">Reply</a></span>
+                    <span class="toggle"><a onclick="comment('${id}','${y}','${m}','${d}')">Reply</a></span>
                     <span class="toggle"><a onclick="comAudio('${id}')" id="actAudio">Voice Reply</a></span>
                 </div>
             </div>
         `
         target.parentNode.insertBefore(div, target.nextSibling);
-
-        gun.get(id).map().on(function(data) {
+        gun.get('~'+pubKey).get(id).get('replies').get(y).get(m).get(d).map().on(function(data) {
             let target = document.getElementById("c." + id)
             let div = document.createElement('div')
             div.className = 'item-view-header'
-            const msg = JSON.parse(data)
-            if (msg.type === "audio") {
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-                if (sig !== undefined && msg.pubkey !== undefined) {
-                    verify(sig, msg.pubkey).then(result => {
-                        if (result.message) {
-                            const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
-                            const audioUrl = URL.createObjectURL(blob);
-                            const audio = new Audio(audioUrl);
-                            // audio.play();
-                            div.innerHTML = `
+            const msg = data
+            div.innerHTML = `
                             <p class="meta" style="font-size: .9em">
-                            ${smartTruncate(msg.pubkey, 25)}
+                            ${msg.username}
                             </p>
-                            <div style="line-height: 1.42857143em;">
-                                <audio id="${msg.timestamp}" controls>                           
-                                    <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                                </audio>
-                            </div>
+                            <div style="line-height: 1.42857143em;">${msg.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                             <p class="meta" style="font-size: .9em">
                             ${moment(msg.timestamp).fromNow()}
                             </p>
                             <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}', '${msg.pubKey}')">[+]</a></span>
                             </div>
                             `
-                        }
-                    })
-                }
-            } else if( msg.type === "text") {
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-                if (sig !== undefined && msg.pubkey !== undefined) {
-                    verify(sig, msg.pubkey).then(result => {
-                        if (result.message) {
-                            div.innerHTML = `
-                            <p class="meta" style="font-size: .9em">
-                            ${smartTruncate(msg.pubkey, 25)}
-                            </p>
-                            <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
-                            <p class="meta" style="font-size: .9em">
-                            ${moment(msg.timestamp).fromNow()}
-                            </p>
-                            <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                            </div>
-                            `
-                        }
-                    })
-                }
-            }
             target.appendChild(div)
             document.getElementById('show.'+id).setAttribute('onclick', "hide('"+id+"')")
             document.getElementById('show.'+id).innerHTML="[-]"
@@ -186,58 +148,28 @@ const showreplyanon = function showreplyanon(id) {
         div.id = "c." + id
         target.parentNode.insertBefore(div, target.nextSibling);
 
-        gun.get(id).map().on(function(data) {
+        session.get(id).map().on(function(data) {
+            console.log(data);
             let target = document.getElementById("c." + id)
             let div = document.createElement('div')
             div.className = 'item-view-header'
-            const msg = JSON.parse(data)
-            if (msg.type === "audio") {
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-                if (sig !== undefined && msg.pubkey !== undefined) {
-                    verify(sig, msg.pubkey).then(result => {
-                        if (result.message) {
-                            const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
-                            const audioUrl = URL.createObjectURL(blob);
-                            div.innerHTML = `
-                            <p class="meta" style="font-size: .9em">
-                            ${smartTruncate(msg.pubkey, 25)}
-                            </p>
-                            <div style="line-height: 1.42857143em;">
-                                <audio id="${msg.timestamp}" controls>                           
-                                    <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                                </audio>
-                            </div>
-                            <p class="meta" style="font-size: .9em">
-                            ${moment(msg.timestamp).fromNow()}
-                            </p>
-                            <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
-                            </div>
-                            `
-                        }
-                    })
+            const msg = data
+            verify(sig, msg.pubkey).then(result => {
+                if (result.message) {
+                    div.innerHTML = `
+                    <p class="meta" style="font-size: .9em">
+                    ${smartTruncate(msg.username, 25)}
+                    </p>
+                    <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
+                    <p class="meta" style="font-size: .9em">
+                    ${moment(msg.timestamp).fromNow()}
+                    </p>
+                    <div class="comment" id="${msg.hash}">
+                        <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
+                    </div>
+                    `
                 }
-            } else if( msg.type === "text") {
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-                if (sig !== undefined && msg.pubkey !== undefined) {
-                    verify(sig, msg.pubkey).then(result => {
-                        if (result.message) {
-                            div.innerHTML = `
-                            <p class="meta" style="font-size: .9em">
-                            ${smartTruncate(msg.pubkey, 25)}
-                            </p>
-                            <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
-                            <p class="meta" style="font-size: .9em">
-                            ${moment(msg.timestamp).fromNow()}
-                            </p>
-                            <div class="comment" id="${msg.hash}">
-                                <span class="toggle"><a id="show.${msg.hash}" onclick="showreplyanon('${msg.hash}')">[+]</a></span>
-                            </div>
-                            `
-                        }
-                    })
-                }
-            }
+            })
             target.appendChild(div)
             document.getElementById('show.'+id).setAttribute('onclick', "hideanon('"+id+"')")
             document.getElementById('show.'+id).innerHTML="[-]"
@@ -388,8 +320,7 @@ const notsigned = function notsigned() {
 }
 
 const sig = function signed() {
-    let user = localStorage.getItem('pair')
-    let pubkey = JSON.parse(user)
+    let pubkey = session.is
     let main = document.getElementById('main')
     let p = document.createElement('form')
     p.className = 'mb-1'
@@ -407,69 +338,38 @@ const sig = function signed() {
         `
     main.appendChild(p)
 
-    gun.get('posts').map().on(function(data) {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = d.getMonth();
+    var d = d.getDate();
+    session.get('posts').get('public').get(y).get(m).get(d).map().on(function(data, key) {
+        console.log(key);
         let target = document.getElementById('main')
         let div = document.createElement('div')
         div.className = 'item-view-header'
-        const msg = JSON.parse(data)
-        const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: msg.type}, s: msg.sig})
-        if (msg.sig !== undefined && msg.pubkey !== undefined) {
-            verify(sig, msg.pubkey).then(result => {
-                const blob = new Blob([hex2byte(result.message)], {type: "audio/webm;codecs=opus"});
-                const audioUrl = URL.createObjectURL(blob);
-                const audio = new Audio(audioUrl);
-                if (result.message) {
-                   if (msg.type === "audio") {
-                    div.innerHTML = `
+        div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
+                        ${smartTruncate(session.is.alias, 25)}
                         </p>
-                        <div style="line-height: 1.42857143em">
-                           <audio id="${msg.timestamp}" controls>                           
-                              <source id="source" src="${audioUrl}" type="audio/webm;codecs=opus"/>                        
-                           </audio>
-                        </div>
+                        <div style="line-height: 1.42857143em;">${data.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
+                        ${moment(data.timestamp).fromNow()}
                         </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
+                        <div class="comment" id="${data.hash}">
+                            <span class="toggle"><a id="show.${data.hash}" onclick="showreply('${data.hash}', '${data.pubKey}')">[+]</a></span>
                         </div>
                     `
-                   } else if (msg.type === "text") {
-                    div.innerHTML = `
-                        <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(msg.pubkey, 25)}
-                        </p>
-                        <div style="line-height: 1.42857143em;">${result.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
-                        <p class="meta" style="font-size: .9em">
-                        ${moment(msg.timestamp).fromNow()}
-                        </p>
-                        <div class="comment" id="${msg.hash}">
-                            <span class="toggle"><a id="show.${msg.hash}" onclick="showreply('${msg.hash}')">[+]</a></span>
-                        </div>
-                    `
-                  }
-                }
-            })
-        }
         target.parentNode.insertBefore(div, target.nextSibling);
     });
 
     document.getElementById('share').addEventListener('click', (event) => {
         event.preventDefault()
         const message = document.getElementById('message').value
-        const pair = localStorage.getItem('pair')
-        const key = JSON.parse(pair)
         if (message) {
             post('posts', 'public', {
                 message: message, type: "text"
-            }, key).then(res => {
-                const msg = JSON.parse(res)
-                const sig = "SEA"+JSON.stringify({m: {message: msg.message, type: "text"}, s: msg.sig})
-                verify(sig, key.pub).then(result => {
-                    document.getElementById('message').value = ""
-                })
+            }, y, m, d).then(res => {
+            
             })
         }
     })
@@ -510,8 +410,10 @@ const register = async(username, password, salt) => {
             sig: sigm.s
         }
         const jstring = JSON.stringify(obj)
-        const user = await gun.get(username).get('sea').put(jstring)
-        return user
+        // const user = await gun.get(username).get('sea').put(jstring)
+        // return user
+        const new_user = await user.create(username, password)
+        return new_user;
     } catch (error) {
 
     }
@@ -573,7 +475,6 @@ const decrypt = async(data, pub) => {
 }
 
 // Elliptic-curve Diffie–Hellman
-
 const secret = async(epub, pair) => {
     try {
         const result = await SEA.secret(epub, pair);
@@ -583,31 +484,14 @@ const secret = async(epub, pair) => {
     }
 }
 
-const post = async(node, path, data, pair) => {
-    if (pair) {
-        try {
-            if (pair.pub == undefined || pair.pub == "") {
-                
-            } else {
-                const signed = await SEA.sign(data, pair)
-                const seasig = JSON.parse(signed.substr(3))
-                const hash = sha256(path + '.' + new Date().getTime() + '~' + pair.pub+seasig.m.message+seasig.s)
-                const obj = {
-                    hash: hash,
-                    pubkey: pair.pub,
-                    message: seasig.m.message,
-                    type: seasig.m.type,
-                    sig: seasig.s,
-                    timestamp: new Date().getTime()
-                }
-                const jstring = JSON.stringify(obj)
-                const result = await gun.get(node).get(path + '.' + new Date().getTime() + '~' + pair.pub).put(jstring)
-                return result
-            }
-        } catch (error) {
-
-        }
-    }
+const post = async(node, path, data, y, m, d) => {
+    data.hash = sha256(path + '.' + new Date().getTime())
+    data.timestamp = new Date().getTime()
+    data.type = "text"
+    data.username = session.is.alias
+    data.pubKey = session.is.pub
+    const result = session.get(node).get(path).get(y).get(m).get(d).set(data)
+    return result
 }
 
 const blob2abuff = async (blob) => {
@@ -744,11 +628,13 @@ class App {
     }
 
     render() {
-        let pair = localStorage.getItem('pair')
+        async () => {
+            let pair = await session.is
         if (pair !== null) {
             sig()
         } else {
             notsigned()
+        }
         }
     }
 }
