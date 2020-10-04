@@ -2,7 +2,7 @@
     Holla universe!
 ***/
 
-const gun = Gun(['http://localhost:3000/gun'])
+const gun = Gun(['http://localhost:4000/gun'])
 const SEA = Gun.SEA
 const user = gun.user();
 const now = moment();
@@ -105,7 +105,7 @@ const showreply = function showreply(id, pubKey) {
             </div>
         `
         target.parentNode.insertBefore(div, target.nextSibling);
-        gun.get('~'+pubKey).get(id).get('replies').get(y).get(m).get(d).map().on(function(data) {
+        gun.get(id).get('replies').get(y).get(m).get(d).map().on(function(data) {
             let target = document.getElementById("c." + id)
             let div = document.createElement('div')
             div.className = 'item-view-header'
@@ -342,14 +342,14 @@ const sig = function signed() {
     var y = d.getFullYear();
     var m = d.getMonth();
     var d = d.getDate();
-    session.get('posts').get('public').get(y).get(m).get(d).map().on(function(data, key) {
+    gun.get('posts').get('public').get(y).get(m).get(d).map().on(function(data, key) {
         console.log(key);
         let target = document.getElementById('main')
         let div = document.createElement('div')
         div.className = 'item-view-header'
         div.innerHTML = `
                         <p class="meta" style="font-size: .9em">
-                        ${smartTruncate(session.is.alias, 25)}
+                        ${data.username}
                         </p>
                         <div style="line-height: 1.42857143em;">${data.message.replace(new RegExp('\r?\n','g'), '<br />')}</div>
                         <p class="meta" style="font-size: .9em">
@@ -490,7 +490,9 @@ const post = async(node, path, data, y, m, d) => {
     data.type = "text"
     data.username = session.is.alias
     data.pubKey = session.is.pub
-    const result = session.get(node).get(path).get(y).get(m).get(d).set(data)
+    var ab = session.get(data.hash).put(data)
+    const result = session.get(node).get(path).get(y).get(m).get(d).set(ab)
+    gun.get(node).get(path).get(y).get(m).get(d).set(ab)
     return result
 }
 
